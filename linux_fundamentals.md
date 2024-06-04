@@ -48,7 +48,7 @@
 - **mv**: To move files or directories from one location to another.
 
   ```
-  mv file1 folder2
+  mv file2 folder2
   ```
 
 - **touch**: To create an empty file.
@@ -91,7 +91,7 @@
 
   ![Screenshot 2024-06-03 134343](https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/ea696832-7bf8-49c4-bfbc-3a7e33dc0376)
 
-- **top**: To display real-time information about system processes.
+- **top**: To display real-time information about system processes. [cpu, memory and swap utilization]
 
   ```
   top
@@ -99,7 +99,7 @@
 
   <img width="582" alt="Screenshot 2024-06-03 134203" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/956dba02-4640-4bcd-93bb-9533fb0a96e4">
 
-- **df**: To display information about disk space usage.
+- **df**: To display information about disk space usage and filesystem partitions.
 
   ```
   df -h
@@ -107,7 +107,7 @@
 
   ![Screenshot 2024-06-03 134147](https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/b00b92d8-fdaf-42ec-a3fe-0f51e6decb3b)
 
-- **du**: To estimate file space usage.
+- **du**: To read file space usage.
 
   ```
   du -ms *
@@ -123,17 +123,11 @@
 
   ![Screenshot 2024-06-03 134502](https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/b0e6cf14-4518-40ae-8941-19a41ccf2748)
 
-- **netstat**: To display network connections.
+- **netstat**: To display network connections on port 80 and to display active ports that are in a listening state.
 
   ```
   netstat -an| grep 80
   ```
-
-  ```
-  netstat -neopa | more
-  ```
-
-  <img width="887" alt="Screenshot 2024-06-03 134653" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/5693d338-7f25-4f8b-8a80-07ad67443572">
 
   ```
   netstat -an | grep LISTEN
