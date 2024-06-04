@@ -25,7 +25,7 @@
   ls -l
   ```
 
-<img width="556" alt="Screenshot 2024-06-03 133702" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/05df75b9-7c53-46a6-ac6f-6d68a1b3c8f3">
+  <img width="556" alt="Screenshot 2024-06-03 133702" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/05df75b9-7c53-46a6-ac6f-6d68a1b3c8f3">
 
 - **rm**: To remove files or directories.
 
