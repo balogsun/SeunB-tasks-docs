@@ -1,184 +1,251 @@
-###Write and execute basic Bash scripts to automate repetitive tasks
+# Wk1Tsk 4: Command-Line Scripting
 
-### To create a basic Bash scripts that will backup a file named "seun.log" once the file is older than 5 minutes.
+## To Automating Repetitive Tasks with Bash Scripts, we try an example that will create a Basic Bash Script to Backup `seun.log` if it is Older than 5 Minutes
 
-### mkdir oluwaseun
+1. **Create the Directory and File:**
 
-### Add any random contents to seun.log file with the vim command
-vi seun.log
+    ```bash
+    mkdir oluwaseun
+    ```
 
-```
-approach to project and planning
+    Add random contents to `seun.log` file using `vim`:
 
-establish realistic timelines and alocate resources effectively
+    ```bash
+    vi seun.log
+    ```
 
-govt project may require adherence 
+    ```
+    approach to project and planning
 
-attention to detail and accuracy
-no details are missed
-how to know your methods are suceesfull
+    establish realistic timelines and allocate resources effectively
 
-how do you priotize ur capital project 
-within limited budget
-example 
-```
-### move seun.log to oluwaseun directory and enter into the directory `oluwaseun`
-mv seun.log oluwaseun
-cd oluwaseun
-<img width="413" alt="Screenshot 2024-06-05 194856" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/a4be4148-4f70-4bb0-b836-b0f9eb4de47e">
+    govt project may require adherence 
 
+    attention to detail and accuracy
+    no details are missed
+    how to know your methods are successful
 
-### Create the Bash scripts to automate repetitive tasks named `repeat.sh`
+    how do you prioritize your capital project 
+    within limited budget
+    example 
+    ```
 
-vi repeat.sh
+2. **Move `seun.log` to `oluwaseun` Directory and change to the Directory:**
 
-```
-#!/bin/bash
+    ```bash
+    mv seun.log oluwaseun
+    cd oluwaseun
+    ```
 
-# File and backup directory location
-dir="/home/ubuntu/oluwaseun"
-file="$dir/seun.log"
-backup_dir="$dir"
+    ![Directory Move](https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/a4be4148-4f70-4bb0-b836-b0f9eb4de47e)
 
-# Time threshold in minutes
-threshold=5
+3. **Create the Bash Script `repeat.sh` to Automate Backups:**
 
-# Check if the file exists
-if [ ! -f "$file" ]; then
-    echo "File $file does not exist."
-    exit 1
-fi
+    ```bash
+    vi repeat.sh
+    ```
 
-# Get the current time and file modification time
-current_time=$(date +%s)
-file_mod_time=$(stat -c %Y "$file")
+    ```bash
+    #!/bin/bash
 
-# Calculate the age of the file in minutes
-age_in_minutes=$(( (current_time - file_mod_time) / 60 ))
+    # File and backup directory location
+    dir="/home/ubuntu/oluwaseun"
+    file="$dir/seun.log"
+    backup_dir="$dir"
 
-# Check if the file is older than the threshold
-if [ $age_in_minutes -gt $threshold ]; then
-    echo "File $file is older than $threshold minutes. Creating a backup."
-    # Create a backup file with the current timestamp
-    timestamp=$(date +%Y%m%d%H%M%S)
-    backup_file="$backup_dir/seun_$timestamp.log"
-    cp "$file" "$backup_file"
-    echo "Backup created: $backup_file"
-else
-    echo "File $file is not older than $threshold minutes. No backup needed."
-fi
-```
-<img width="456" alt="Screenshot 2024-06-05 195225" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/8a31aba2-6330-4f0a-ae8f-0ab7189bc380">
+    # Time threshold in minutes
+    threshold=5
 
-### Explaining how the variables in the script works:
+    # Check if the file exists
+    if [ ! -f "$file" ]; then
+        echo "File $file does not exist."
+        exit 1
+    fi
 
-dir="/home/ubuntu/oluwaseun": The directory where the file and backups are located.
-file="$dir/seun.log": The full path to the log file.
-backup_dir="$dir": The backup directory, which is the same as the directory containing the file.
-Ensure File Exists:
+    # Get the current time and file modification time
+    current_time=$(date +%s)
+    file_mod_time=$(stat -c %Y "$file")
 
-if [ ! -f "$file" ]; then: Checks if the file exists. If not, it exits with a message.
-Get Current Time and File Modification Time:
+    # Calculate the age of the file in minutes
+    age_in_minutes=$(( (current_time - file_mod_time) / 60 ))
 
-current_time=$(date +%s): Gets the current time in seconds since the epoch.
-file_mod_time=$(stat -c %Y "$file"): Gets the last modification time of the file in seconds since the epoch.
-Calculate Age of the File in Minutes:
+    # Check if the file is older than the threshold
+    if [ $age_in_minutes -gt $threshold ]; then
+        echo "File $file is older than $threshold minutes. Creating a backup."
+        # Create a backup file with the current timestamp
+        timestamp=$(date +%Y%m%d%H%M%S)
+        backup_file="$backup_dir/seun_$timestamp.log"
+        cp "$file" "$backup_file"
+        echo "Backup created: $backup_file"
+    else
+        echo "File $file is not older than $threshold minutes. No backup needed."
+    fi
+    ```
 
-age_in_minutes=$(( (current_time - file_mod_time) / 60 )): Calculates the age of the file in minutes.
-Check if the File is Older than the Threshold:
+    ![Repeat Script](https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/8a31aba2-6330-4f0a-ae8f-0ab7189bc380)
 
-if [ $age_in_minutes -gt $threshold ]; then: Checks if the file is older than the specified threshold.
-Create a Backup:
+### Explanation of Script Variables
 
-timestamp=$(date +%Y%m%d%H%M%S): Generates a timestamp for the backup file name.
-backup_file="$backup_dir/seun_$timestamp.log": Defines the backup file name.
-cp "$file" "$backup_file": Copies the original file to the backup directory with the new name.
-Output Messages:
+- `dir="/home/ubuntu/oluwaseun"`: The directory where the file and backups are located.
+- `file="$dir/seun.log"`: The full path to the log file.
+- `backup_dir="$dir"`: The backup directory, which is the same as the directory containing the file.
+
+### Ensure File Exists
+
+- `if [ ! -f "$file" ]; then`: Checks if the file exists. If not, it exits with a message.
+
+### Get Current Time and File Modification Time
+
+- `current_time=$(date +%s)`: Gets the current time in seconds since the epoch.
+- `file_mod_time=$(stat -c %Y "$file")`: Gets the last modification time of the file in seconds since the epoch.
+
+### Calculate Age of the File in Minutes
+
+- `age_in_minutes=$(( (current_time - file_mod_time) / 60 ))`: Calculates the age of the file in minutes.
+
+### Check if the File is Older than the Threshold
+
+- `if [ $age_in_minutes -gt $threshold ]; then`: Checks if the file is older than the specified threshold.
+
+### Create a Backup
+
+- `timestamp=$(date +%Y%m%d%H%M%S)`: Generates a timestamp for the backup file name.
+- `backup_file="$backup_dir/seun_$timestamp.log"`: Defines the backup file name.
+- `cp "$file" "$backup_file"`: Copies the original file to the backup directory with the new name.
+
+### Output Messages
 
 Displays messages to indicate whether the file was backed up or if no backup was needed.
 
-### Give `repeat.sh` script executable permission
-chmod 755 repeat.sh
+4. **Give `repeat.sh` Script Executable Permission:**
 
-### Execute the bash script
-./repeat.sh
+    ```bash
+    chmod 755 repeat.sh
+    ```
 
-### check that the backup has been effected, see that new log files were created.
-ls -l
-<img width="544" alt="Screenshot 2024-06-05 195429" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/c044dfd4-3128-4c8b-b136-29956b5c00be">
+5. **Execute the Bash Script:**
 
-### After some minutes, more backups have now been taken in screenshot below
-<img width="479" alt="Screenshot 2024-06-05 203142" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/8efc4879-03d5-46e2-ba1f-6da5a8b39638">
+    ```bash
+    ./repeat.sh
+    ```
 
+6. **Check that the Backup has been Effected:**
 
-### Add cronjob entries to automate the bash script execution
-crontab -e
-crontab -l
-*/10 * * * * /home/ubuntu/oluwaseun/repeat.sh
-<img width="563" alt="Screenshot 2024-06-05 195906" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/224295d4-81e4-46cc-89a7-8cdeb26505fb">
+    ```bash
+    ls -l
+    ```
 
-2. **Utilizing Text Processing Utilities:**
+    ![Backup Verification](https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/c044dfd4-3128-4c8b-b136-29956b5c00be)
 
-Create a random log file named "seun.log", and run the following commands.
+7. **After Some Minutes, More Backups are Created:**
 
-# Use grep to find lines containing a specific pattern e.g "suceesfull", not that the spelling of successfull here is inocrrect.
-grep "suceesfull" $seun.log
+    ![Multiple Backups](https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/8efc4879-03d5-46e2-ba1f-6da5a8b39638)
 
-result is displayes as expected in the screenshot sample below;
+### Add Cronjob Entries to Automate the Bash Script Execution
 
-# Next, Use sed command for replace text, we will be replacing `suceesfull` to the correct word `succesfull`
-sed -i 's/suceesfull/succesfull/g' $seun.log
+1. **Edit the Cronjob:**
 
-<img width="521" alt="Screenshot 2024-06-05 201029" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/f4e795c9-18e9-47a8-9c64-b3a71414e344">
+    ```bash
+    crontab -e
+    ```
 
+2. **List Cronjob Entries:**
 
-# Next, Using awk command, we will to print specific lines [line 3] in the file
-awk 'NR == 3' seun.log
-<img width="556" alt="Screenshot 2024-06-05 201541" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/33ea80ac-067d-46e9-831a-c58fb8fb7ba2">
+    ```bash
+    crontab -l
+    ```
 
+3. **Cronjob Entry to Run Every 10 Minutes:**
 
-3. **Automating System Administration for User Management:**
+    ```plaintext
+    */10 * * * * /home/ubuntu/oluwaseun/repeat.sh
+    ```
 
-To create a bash script that will prompt you to enter any username you want, and then it will create that user using `adduser` and grant sudo access using `usermod` command.
-I can add as many users as you need by running the script multiple times.
-The script will display "Enter your choice: " on the terminal, and the user can type their choice (such as 1 or 2) followed by pressing Enter. 
-The input provided by the user will be stored in the variable choice, which can then be used later in the script.
+    ![Cronjob Entry](https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/224295d4-81e4-46cc-89a7-8cdeb26505fb)
 
-vi create_user.sh
+## Utilizing Text Processing Utilities
 
+Create a random log file named `seun.log` and run the following commands.
 
-```bash
-#!/bin/bash
+1. **Use `grep` to Find Lines Containing a Specific Pattern (e.g., "suceesfull"):**
 
-# Add a new user and grant sudo access
-add_user() {
-    read -p "Enter username: " username
-    sudo adduser $username
-    sudo usermod -aG sudo $username  # Grant sudo access to the new user
-}
+    ```bash
+    grep "suceesfull" seun.log
+    ```
 
-# Main menu
-while true; do
-    echo "1. Add User"
-    echo "2. Exit"
-    read -p "Enter your choice: " choice
+    Result is displayed as expected:
 
-    case $choice in
-        1) add_user ;;
-        2) break ;;
-        *) echo "Invalid option";;
-    esac
-done
-```
-give it executable permission:
-chmod 755 create_user.sh
+2. **Use `sed` Command to Replace Text:**
 
-Execute the script
-./create_user.sh
-<img width="493" alt="image" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/bf8e903d-efd3-45e6-aadb-443802992ed7">
+    Replace `suceesfull` with the correct word `successful`:
 
-### Check characteristics of the newly create user:
-sudo chage -l seun
-cat /etc/passwd | grep seun
-<img width="485" alt="Screenshot 2024-06-05 202905" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/1d20718a-83af-4e3a-a8ce-2e5842e1a0c8">
+    ```bash
+    sed -i 's/suceesfull/successful/g' seun.log
+    ```
 
+    ![sed Command](https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/f4e795c9-18e9-47a8-9c64-b3a71414e344)
+
+3. **Use `awk` Command to Print Specific Lines (Line 3) in the File:**
+
+    ```bash
+    awk 'NR == 3' seun.log
+    ```
+
+    ![awk Command](https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/33ea80ac-067d-46e9-831a-c58fb8fb7ba2)
+
+## Automating System Administration for User Management
+
+Create a bash script that prompts you to enter any username you want and then creates that user using `adduser` and grants sudo access using the `usermod` command.
+
+1. **Create the Script `create_user.sh`:**
+
+    ```bash
+    vi create_user.sh
+    ```
+
+    ```bash
+    #!/bin/bash
+
+    # Add a new user and grant sudo access
+    add_user() {
+        read -p "Enter username: " username
+        sudo adduser $username
+        sudo usermod -aG sudo $username  # Grant sudo access to the new user
+    }
+
+    # Main menu
+    while true; do
+        echo "1. Add User"
+        echo "2. Exit"
+        read -p "Enter your choice: " choice
+
+        case $choice in
+            1) add_user ;;
+            2) break ;;
+            *) echo "Invalid option";;
+        esac
+    done
+    ```
+
+2. **Give the Script Executable Permission:**
+
+    ```bash
+    chmod 755 create_user.sh
+    ```
+
+3. **Execute the Script:**
+
+    ```bash
+    ./create_user.sh
+    ```
+
+    ![Create User Script](https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/bf8e903d-efd3-45e6-aadb-443802992ed7)
+
+4. **Check Characteristics of the Newly Created User:**
+
+    ```bash
+    sudo chage -l seun
+    cat /etc/passwd | grep seun
+    ```
+
+    ![User Characteristics](https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/1d20718a-83af-4e3a-a8ce-2e5842e1a0c8)
