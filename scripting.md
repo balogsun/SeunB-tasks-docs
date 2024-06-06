@@ -25,6 +25,8 @@ example
 ### move seun.log to oluwaseun directory and enter into the directory `oluwaseun`
 mv seun.log oluwaseun
 cd oluwaseun
+<img width="413" alt="Screenshot 2024-06-05 194856" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/a4be4148-4f70-4bb0-b836-b0f9eb4de47e">
+
 
 ### Create the Bash scripts to automate repetitive tasks named `repeat.sh`
 
@@ -66,6 +68,7 @@ else
     echo "File $file is not older than $threshold minutes. No backup needed."
 fi
 ```
+<img width="456" alt="Screenshot 2024-06-05 195225" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/8a31aba2-6330-4f0a-ae8f-0ab7189bc380">
 
 ### Explaining how the variables in the script works:
 
@@ -102,11 +105,17 @@ chmod 755 repeat.sh
 
 ### check that the backup has been effected, see that new log files were created.
 ls -l
+<img width="544" alt="Screenshot 2024-06-05 195429" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/c044dfd4-3128-4c8b-b136-29956b5c00be">
+
+### After some minutes, more backups have now been taken in screenshot below
+<img width="479" alt="Screenshot 2024-06-05 203142" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/8efc4879-03d5-46e2-ba1f-6da5a8b39638">
+
 
 ### Add cronjob entries to automate the bash script execution
 crontab -e
 crontab -l
 */10 * * * * /home/ubuntu/oluwaseun/repeat.sh
+<img width="563" alt="Screenshot 2024-06-05 195906" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/224295d4-81e4-46cc-89a7-8cdeb26505fb">
 
 2. **Utilizing Text Processing Utilities:**
 
@@ -120,8 +129,12 @@ result is displayes as expected in the screenshot sample below;
 # Next, Use sed command for replace text, we will be replacing `suceesfull` to the correct word `succesfull`
 sed -i 's/suceesfull/succesfull/g' $seun.log
 
+<img width="521" alt="Screenshot 2024-06-05 201029" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/f4e795c9-18e9-47a8-9c64-b3a71414e344">
+
+
 # Next, Using awk command, we will to print specific lines [line 3] in the file
 awk 'NR == 3' seun.log
+<img width="556" alt="Screenshot 2024-06-05 201541" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/33ea80ac-067d-46e9-831a-c58fb8fb7ba2">
 
 
 3. **Automating System Administration for User Management:**
@@ -162,7 +175,10 @@ chmod 755 create_user.sh
 
 Execute the script
 ./create_user.sh
+<img width="493" alt="image" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/bf8e903d-efd3-45e6-aadb-443802992ed7">
 
 ### Check characteristics of the newly create user:
 sudo chage -l seun
 cat /etc/passwd | grep seun
+<img width="485" alt="Screenshot 2024-06-05 202905" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/1d20718a-83af-4e3a-a8ce-2e5842e1a0c8">
+
