@@ -351,3 +351,7 @@ Below shows screenshot information of source, destination packets and network pr
 
 Below shows screenshot information of icmp packets only.
 <img width="952" alt="image" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/a7630535-587f-4ee7-8b7b-b3d608eaaef7">
+
+## Conclusion
+
+We have successfully tested and shown that configuring virtual machines with different network configurations, including subnets, VPCs, security groups, can be effectively done. Additionally, we have set up and tested network connectivity between instances using ping, ensuring seamless communication within the network. Furthermore, we have analyzed network traffic using packet-capturing tools like Wireshark and tcpdump, providing insights into network behavior and facilitating troubleshooting and optimization efforts.
