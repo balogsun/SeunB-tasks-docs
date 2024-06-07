@@ -1,5 +1,5 @@
-
-# Terraform Script to Create EC2 Instances
+# Wk1Tsk 1: Network Fundamentals
+### Terraform Script to Create EC2 Instances
 
 We will use a Terraform script to create five EC2 instances. Instance names will be `seun1`, `seun2`, `seun3`, `seun4`, and `bastion`.
 
@@ -248,6 +248,7 @@ scp -i "C:\Users\balog\.ssh\project-key-aug.pem" "C:\Users\balog\.ssh\project-ke
 scp -i "C:\Users\balog\.ssh\project-key-aug.pem" "C:\Users\balog\.ssh\project-key-aug.pem" ubuntu@35.183.106.246:/home/ubuntu/.ssh
 scp -i "C:\Users\balog\.ssh\project-key-aug.pem" "C:\Users\balog\.ssh\project-key-aug.pem" ubuntu@35.183.20.237:/home/ubuntu/.ssh
 ```
+<img width="670" alt="Screenshot 2024-06-06 132754-bastion" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/f23f1833-7fed-47a8-b5b5-683ee1d0618e">
 
 ### IP Addresses of All Instances
 - **Bastion**: 35.182.125.175
@@ -257,10 +258,39 @@ scp -i "C:\Users\balog\.ssh\project-key-aug.pem" "C:\Users\balog\.ssh\project-ke
 - **Seun4**: 10.0.2.226 (Private IP)
 
 Log on to `seun1` and `seun2` and run ping/ssh commands across each server.
+- Ping accross from `seun1` to `seun2` is successful
+  <img width="412" alt="Screenshot 2024-06-06 143116-ping" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/dbf853e4-749a-4115-93f2-758dfd23345f">
+
+- Ping accross from `seun2` to `seun1` is successful
+  <img width="415" alt="Screenshot 2024-06-06 143150-ping" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/ec771281-f9fc-4312-8e28-6e4c6adf5e70">
+
+- ssh from `seun2` to `seun3` stalls and irresponsive as there is no route to the private subnet for connectivity
+  <img width="496" alt="Screenshot 2024-06-06 143327-ping2" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/3166fa31-5298-4aaa-a908-7faff21d651d">
+
+- ssh from `seun1` to `seun4` stalls and irresponsive as there is no route to the private subnet for connectivity  
+  <img width="501" alt="Screenshot 2024-06-06 143352-ping2" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/77c152e2-dca3-45f3-a61d-2cd278544b95">
+
+- Ping accross from `seun3` to `seun1` stalls and irresponsive as there is no route to the private subnet for connectivity
+  <img width="478" alt="Screenshot 2024-06-06 143519-ping3" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/74d126ae-18b1-40ea-8b4a-d78b17d8a508">
+
+ - A ping accross from `seun4` to `seun2` stalls and irresponsive as there is no route to the private subnet for connectivity
+   <img width="481" alt="Screenshot 2024-06-06 143646-ping3" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/6a91918a-cf9d-4b57-81dc-44aa4dd6f92f">
+
+- ssh from `seun4` to `seun1` stalls and irresponsive as there is no route to the private subnet for connectivity
+  <img width="491" alt="Screenshot 2024-06-06 144244-ping3" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/f6a537b1-812e-455c-955b-64d72c8c0723">
+
 
 ### From the Bastion Host, SSH into the Private Instance
 ```bash
 ssh -i /home/ubuntu/.ssh/project-key-aug.pem ubuntu@10.0.2.141
+
+## get the names of the netwrok interphases by running command
+
+```
+ifconfig -a
+```
+So we will be running tcpdump on the enX0 netwrok interface
+<img width="488" alt="Screenshot 2024-06-06 142242-tcpdump" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/09b6f4e6-fbf0-490e-8b11-a33200238b78">
 
 ## Analyze network traffic using packet-capturing tools like Wireshark or tcpdump
 Run below commands to collect packets from the server.
@@ -269,9 +299,11 @@ Run below commands to collect packets from the server.
 sudo tcpdump -i enX0 -w /home/ubuntu/seun2_icmp.pcap
 sudo tcpdump -i enX0 icmp -w /home/ubuntu/seun2_icmp.pcap
 ```
+<img width="491" alt="Screenshot 2024-06-06 142031-tcpdump" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/3b407757-3760-4179-8991-0876539dd6d9">
 
 ## Copy out the output files `seun2_icmp.pcap` and `seun2_icmp.pcap` for wireshark analysis:
 
 ```
 scp -i "C:\Users\balog\.ssh\project-key-aug.pem" -r ubuntu@35.183.20.237:/home/ubuntu/seun2.pcap "C:\Users\balog\Desktop\"
 ```
+<img width="668" alt="Screenshot 2024-06-06 142844-tcpdump" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/04706a73-cea6-4458-8e98-f3fd36165c1a">
