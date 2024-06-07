@@ -1,8 +1,8 @@
 # Wk1Tsk 1: Network Fundamentals
 
-### Terraform Script to Create EC2 Instances
+### First step is to create the EC2 instances, and VPC resources with Terraform
 
-We will use a Terraform script to create five EC2 instances. Instance names will be `seun1`, `seun2`, `seun3`, `seun4`, and `bastion`.
+We will  create five EC2 instances. Instance names will be `seun1`, `seun2`, `seun3`, `seun4`, and `bastion`.
 
 To configure the virtual machines on different network layers, we will create two subnets within a VPC. One will have a private subnet, and the other will have a public subnet with an internet gateway associated with it.
 
@@ -324,6 +324,7 @@ sudo tcpdump -i enX0 -w /home/ubuntu/seun2_icmp.pcap
 sudo tcpdump -i enX0 icmp -w /home/ubuntu/seun2_icmp.pcap
 
 ```
+
 - Screenshot shows 30 and 20 packets were collected respectively in about 10 seconds.
 - Use `Ctrl+C` to terminate the tcpdump session.
 
@@ -338,3 +339,15 @@ scp -i "C:\Users\balog\.ssh\project-key-aug.pem" -r ubuntu@35.183.20.237:/home/u
 ```
 
 <img width="668" alt="Screenshot 2024-06-06 142844-tcpdump" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/04706a73-cea6-4458-8e98-f3fd36165c1a">
+
+### Analyse data with wireshark
+- Launch the wireshark application
+- Click open and open the save files `seun2.pcap` and `seun2_icmp.pcap`
+
+Below shows screenshot information of source, destination packets and network protocols.
+
+<img width="958" alt="Screenshot 2024-06-06 214440-wireshark" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/f4e7ce47-3ab7-46ea-9da6-d89685c49f9d">
+
+
+Below shows screenshot information of icmp packets only.
+<img width="952" alt="image" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/a7630535-587f-4ee7-8b7b-b3d608eaaef7">
