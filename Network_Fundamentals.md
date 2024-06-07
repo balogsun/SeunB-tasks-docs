@@ -272,9 +272,11 @@ scp -i "C:\Users\balog\.ssh\project-key-aug.pem" "C:\Users\balog\.ssh\project-ke
 **NOTE: Instances on public subnet would be able to communicate with each other, as Instances on private subnet would also be able to communicate with each other, but Instances on the private subnet would not be able to cummunicate with instances on the public subnet.**
 
 - Ping accross from `seun1` to `seun2` is successful
+  
   <img width="412" alt="Screenshot 2024-06-06 143116-ping" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/dbf853e4-749a-4115-93f2-758dfd23345f">
 
 - Ping accross from `seun2` to `seun1` is successful
+  
   <img width="415" alt="Screenshot 2024-06-06 143150-ping" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/ec771281-f9fc-4312-8e28-6e4c6adf5e70">
 
 - ssh from `seun2` to `seun3` stalls and irresponsive as there is no route to the private subnet for connectivity
