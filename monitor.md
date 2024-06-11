@@ -70,6 +70,8 @@ journalctl -u prometheus -f --no-pager [troubleshoot]
 
 Check <http://localhostIP:9090>. If you go to targets, you should see only one — Prometheus target. It scrapes itself every 15 seconds by default.
 
+<img width="566" alt="image" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/03ada490-844f-4acc-b5e8-9db6dc74ec37">
+
 ---
 
 # Install NodeExporter
@@ -132,6 +134,7 @@ journalctl -u node_exporter -f --no-pager [troubleshoot]
 ```
 
 Open a browser and navigate to `http://localhost:9100/metrics`. You should see various system metrics being exposed.
+<img width="527" alt="image" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/c13ddb3f-be40-44a0-99f5-f04067a2233d">
 
 ### Add NodeExporter as a Target for Prometheus
 
@@ -177,6 +180,7 @@ sudo systemctl restart prometheus
 1. Check `http://172.31.206.231:9090/targets`.
 
 2. Open the Prometheus web UI (`http://localhost:9090`), go to `Status` > `Targets`, and ensure `node_exporter` is listed and UP.
+<img width="664" alt="image" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/ae96115d-764f-483e-b6f8-2f23b20384d3">
 
 ## Install Grafana
 
@@ -216,6 +220,7 @@ sudo systemctl restart prometheus
 6. Log in to Grafana at `http://20.63.110.74:3000` using default credentials:
     - Username: `admin`
     - Password: `admin`
+<img width="755" alt="image" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/31056672-073f-4543-9ccc-3cdc154b3911">
 
 ## Visualize Metrics in Grafana
 
@@ -275,6 +280,7 @@ ps aux | grep custom_script.py
 ### Verify Custom Metrics
 
 Open a browser and navigate to `http://localhost:8000/metrics`. Your custom metrics should be listed.
+<img width="542" alt="image" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/77b6e5be-4609-4cc5-9b6f-4ad099a00b79">
 
 ### Configure Prometheus to Scrape Your Custom Metrics
 
@@ -296,6 +302,7 @@ sudo systemctl restart prometheus
 ### Verify Prometheus is Scraping Your Custom Metrics
 
 Open the Prometheus web UI, go to `Status` > `Targets`, and ensure `custom_metrics` is listed and UP.
+<img width="680" alt="image" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/b22db34a-eb15-4166-80ae-c2d2bf8655ba">
 
 ## Create an Alert Rules File (`alert.rules`)
 
@@ -421,7 +428,8 @@ sudo systemctl status alertmanager
 curl localhost:9093
 ```
 
-You can also access Alertmanager in a web browser at `http://localhost:9093`.
+I could also access Alertmanager in a web browser at `http://localhost:9093`.
+<img width="763" alt="image" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/2397a800-4ce2-4adc-9d32-7108a6a46211">
 
 ### Install `amtool`
 
@@ -496,11 +504,15 @@ sudo systemctl restart prometheus
 
 ### Verify Prometheus is Able to Reach the Alertmanager
 
-Access the Prometheus Expression Browser in a web browser at `http://172.31.206.231:9090/graph`. Run the following query and ensure the current value is 1:
+Access the Prometheus Expression Browser in a web browser at `http://172.31.206.231:9090/graph`. 
+<img width="568" alt="image" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/1fefacbf-0fba-4a3b-a99a-188c55cd0c49">
+
+Run the following query and ensure the current value is 1:
 
 ```prometheus
 prometheus_notifications_alertmanagers_discovered =1
 ```
+<img width="856" alt="image" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/a5523ef2-0125-41b6-92e9-91e298e6ab37">
 
 ## Setup SMTP for Gmail
 
@@ -514,7 +526,7 @@ prometheus_notifications_alertmanagers_discovered =1
 
 ### Open `/etc/grafana.ini` File
 
-Paste this content and update the values:
+Paste this content and update the values with your own:
 
 ```ini
 [smtp]
@@ -542,7 +554,12 @@ This can be done with the help of Contact Point:
 5. Enter the list of email IDs as comma-separated values.
 6. Test your SMTP Configuration and Contact Point by sending a test email by clicking `Test` in the right top corner.
 7. If everything goes well, you’ll receive an email to the email IDs provided with the subject `[FIRING:1] (TestAlert Grafana)`.
+<img width="582" alt="image" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/649b9e31-3561-48e2-885d-2c6e00229a8d">
+
 8. Click `Save Contact Point` to save.
+
+**I set alert rule initially stated above for an alert to be triggered and email sent, once memory is above 10%, it worked, se screenshot below:**
+<img width="643" alt="Screenshot 2024-06-10 233829" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/a13997d6-eff4-40b7-a5b0-2aaf08820184">
 
 ## Configure Notification Policies
 
@@ -552,6 +569,7 @@ This can be done with the help of Contact Point:
 2. Click the 3 dots […] & choose `edit`.
 3. Update the Contact Point to the one we have created.
 4. Click on `Update default policy`.
+<img width="841" alt="image" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/98eb76f3-d5e2-4279-91bc-e680a25b2650">
 
 ## Create Grafana Dashboards
 
@@ -569,5 +587,7 @@ This can be done with the help of Contact Point:
 3. Select `Prometheus` as the endpoint under Prometheus "data sources" dropdown.
 4. Click `Import`.
 5. This will show the monitoring dashboard [CPU, memory, disk] for the node.
+<img width="841" alt="image" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/6d9f97bc-6368-4d6b-8016-2961f1037f1e">
+
 
 ```
