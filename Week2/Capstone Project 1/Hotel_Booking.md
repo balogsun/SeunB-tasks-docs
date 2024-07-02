@@ -257,15 +257,17 @@ jobs:
 ### Check the deployment by accessing the loadbalancer URL that has been created from the `kubectl get svc` command.
 
 ![Screenshot 2024-06-20 185746](https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/3c0631e4-fc05-434c-b2ea-8d710846d330)
+
 ![Screenshot 2024-06-20 185853](https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/8bd17c5e-d135-4dee-ba0b-c4adb39685d1)
+
 ![Screenshot 2024-06-20 190305](https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/bf2638e3-6a6b-46b9-8f9f-cee476aef5d7)
 
 
-### Below I have attached scrennshots to show failed and succesful builds.
+### Below I have attached screenshots to show failed and succesful builds.
 ![Screenshot 2024-06-20 184929](https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/a4f4b43b-c5e8-49d8-a5d3-4048556992c3)
 
 
-### Also, i made a change to the `AboutUs.jsx` file [updating the contact information to my own email address details] and commited the codes, upon pushing the comit, the pieplien was triggered and the change was effected immediately.
+### Also, i made a change to the `AboutUs.jsx` file [updating the contact information to my own email address details] and commited the codes, upon pushing the commit, the pipeline was triggered and the change was effected immediately.
 
 <img width="749" alt="Screenshot 2024-06-20 191107" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/88b84062-507a-4b21-80cf-05268a34808e">
 
