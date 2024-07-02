@@ -263,7 +263,7 @@ jobs:
 ![Screenshot 2024-06-20 190305](https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/bf2638e3-6a6b-46b9-8f9f-cee476aef5d7)
 
 
-### Below I have attached screenshots to show failed and succesful workflow runs.
+### Below I have attached screenshots to show failed and successful workflow runs.
 ![Screenshot 2024-06-20 184929](https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/a4f4b43b-c5e8-49d8-a5d3-4048556992c3)
 
 
