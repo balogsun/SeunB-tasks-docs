@@ -67,11 +67,78 @@ CMD ["npm", "start"]
 - **Exposing Port**: Exposes port 3000, which the Next.js app listens on.
 - **Starting the Application**: Defines the default command to start the Next.js app using `npm start`.
 
-=========
-
 ## Kubernetes Cluster Setup
 
-I set up a Kubernetes cluster using the following Terraform modules in my repo: [Terraform EKS Module](https://github.com/balogsun/terraform-eks-with-basic-app.git)
+I set up a Kubernetes cluster using the following Terraform modules in my repo: [Terraform EKS Module](https://github.com/balogsun/terraform-eks-with-basic-app.git) and steps sumamrized below:
+
+- **Install AWS CLI**
+  - Follow AWS documentation: https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+
+- **Install Terraform**
+  - Follow instructions: https://developer.hashicorp.com/terraform/install
+
+- **Create Terraform Files and Configure AWS Provider**
+  - **provider.tf**: Configure AWS provider for `ca-central-1` region, retrieve current region and availability zones.
+  ```hcl
+  provider "aws" {
+    region  = "ca-central-1"
+  }
+
+  data "aws_region" "current" {}
+
+  data "aws_availability_zones" "available" {}
+  ```
+  - **worker-node.tf**: Configure IAM role, EKS node group with instance types, subnets, scaling parameters, and SSH access.
+
+  - **variables.tf**: Define input variables for EKS cluster deployment:
+    - `cluster-name`: "pjct-cluster"
+    - `eks_version`: "1.30"
+    - `key_pair_name`: "project-key"
+    - `eks_node_instance_type`: "t2.medium"
+  ```hcl
+  variable "cluster-name" {
+    default = "pjct-cluster"
+    type    = string
+  }
+  variable "eks_version" {
+    default = "1.30"
+    type    = string
+  }
+  variable "key_pair_name" {
+    default = "project-key"
+  }
+  variable "eks_node_instance_type" {
+    default = "t2.medium"
+  }
+  ```
+  - **cluster.tf**: Set up AWS EKS cluster with necessary IAM roles, security groups, and the cluster itself.
+
+  - **vpc.tf**: Create VPC with public and private subnets across three availability zones, configure internet and NAT gateways, and set up route tables.
+
+- **Step 2: Configure AWS CLI**
+  - Run `aws configure` and enter AWS credentials, default region (`ca-central-1`), and default output format.
+  ```bash
+  aws configure
+
+  Access Key ID: *********************
+  Secret key: ******************************************
+  Default region Name [none]: ca-central-1
+  Default output format [none]:
+  ```
+
+- **Step 3: Initialize Terraform Modules**
+  - Clone the repository, navigate to `terraform-eks-seun`, and run `terraform init`.
+
+- **Step 4: Create Clusters and Resources**
+  - Run `terraform plan` to create an execution plan.
+  - Run `terraform apply -auto-approve` to apply the changes.
+
+- **Step 5: Update Kubeconfig**
+  - Run `aws eks update-kubeconfig --region ca-central-1 --name pjct-cluster` to update the kubeconfig file.
+
+- **Step 6: Confirm Cluster and Nodes**
+  - Run `aws eks list-clusters` to list EKS clusters.
+  - Run `kubectl get nodes -o wide` to get node details.
 
 ## Define Kubernetes Manifests
 
@@ -122,8 +189,105 @@ spec:
 
 ### Set up monitoring and logging using Prometheus, Grafana
 
-Link to my repo using prometheus to monitor a kunbernetes environment.
-[Prometheus Monitoring Repo](https://github.com/Makinates/SeunB-tasks-docs/tree/288703b081afc29d2e7e85f4785bc41575ef621b/Week1/Task2/Monitoring%20and%20Logging)
+```markdown
+# Helm Chart Installations:
+
+```bash
+curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
+sudo apt-get install apt-transport-https --yes
+echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+sudo apt-get update
+sudo apt-get install helm
+```
+
+## Add Helm Repositories
+
+### Add the Helm Stable Charts for your local client:
+```bash
+helm repo add stable https://charts.helm.sh/stable
+```
+
+### Add Prometheus Helm repo:
+```bash
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+```
+
+```bash
+helm repo ls
+helm repo update
+```
+
+## Create Prometheus Namespace
+```bash
+kubectl create namespace prometheus
+```
+
+## Install Prometheus/kube-prometheus-stack
+```bash
+helm install stable prometheus-community/kube-prometheus-stack -n prometheus
+```
+
+## Check Installation Status
+```bash
+kubectl get pods -n prometheus
+kubectl get svc -n prometheus # you should see both prometheus and grafana services here
+```
+
+## Expose Prometheus for External Access
+```bash
+kubectl edit svc stable-kube-prometheus-sta-prometheus -n prometheus
+```
+Change the service type from `ClusterIP` to `LoadBalancer`. Save the file.
+
+### Configuration example:
+```yaml
+selector:
+  app.kubernetes.io/name: prometheus
+  operator.prometheus.io/name: stable-kube-prometheus-sta-prometheus
+sessionAffinity: None
+type: ClusterIP
+```
+
+Access the GUI with the load balancer URL.
+
+## Provision Grafana
+Edit/change the `stable-Grafana` service from `ClusterIP` to `LoadBalancer`
+```bash
+kubectl edit svc stable-grafana -n prometheus
+```
+
+### Configuration example:
+```yaml
+selector:
+  app.kubernetes.io/instance: stable
+  app.kubernetes.io/name: grafana
+sessionAffinity: None
+type: ClusterIP
+```
+
+```bash
+kubectl get svc -n prometheus
+```
+Observe the output change, adding the load balancer URL.
+
+## Access Grafana GUI
+Access the Grafana GUI with the load balancer URL and login to Grafana:
+
+### Credentials:
+- username: admin
+- password: prom-operator
+
+## Visualize Metrics
+To visualize metrics, add a data source:
+
+1. Click **Add data source** and select Prometheus.
+2. OR open the 3-line menu icon, select **Connections**, then **Data sources**.
+
+The data source "prometheus" is already added by default.
+
+Open the dashboard panel to see the default available dashboards and click on the one that suits the visualization of the cluster environment.
+
+This will show a monitoring dashboard for all cluster nodes.
 
 ## Implement CI/CD Pipelines for Automated Builds, Testing, and Deployments
 
