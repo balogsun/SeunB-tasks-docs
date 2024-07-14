@@ -189,7 +189,7 @@ spec:
 
 ### Set up monitoring and logging using Prometheus, Grafana
 
-# Helm Chart Installations:
+### Helm Chart Installations:
 
 ```bash
 curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
@@ -199,7 +199,7 @@ sudo apt-get update
 sudo apt-get install helm
 ```
 
-## Add Helm Repositories
+### Add Helm Repositories
 
 ### Add the Helm Stable Charts for your local client:
 ```bash
@@ -218,18 +218,18 @@ helm repo ls
 helm repo update
 ```
 
-## Create Prometheus Namespace
+### Create Prometheus Namespace
 ```bash
 kubectl create namespace prometheus
 ```
 
-## Install Prometheus/kube-prometheus-stack
+### Install Prometheus/kube-prometheus-stack
 ```bash
 helm install stable prometheus-community/kube-prometheus-stack -n prometheus
 ```
 <img width="611" alt="image" src="https://github.com/user-attachments/assets/0a831ae1-f389-41a3-9cee-7a873303ee89">
 
-## Check Installation Status
+### Check Installation Status
 ```bash
 kubectl get pods -n prometheus
 
@@ -239,7 +239,7 @@ kubectl get svc -n prometheus # you should see both prometheus and grafana servi
 ```
 <img width="614" alt="image" src="https://github.com/user-attachments/assets/0d4719aa-f210-4b5e-958c-bcf4ced56bf0">
 
-## Expose Prometheus for External Access
+### Expose Prometheus for External Access
 ```bash
 kubectl edit svc stable-kube-prometheus-sta-prometheus -n prometheus
 ```
@@ -256,7 +256,7 @@ type: ClusterIP
 
 Access the GUI with the load balancer URL.
 
-## Provision Grafana
+### Provision Grafana
 Edit/change the `stable-Grafana` service from `ClusterIP` to `LoadBalancer`
 ```bash
 kubectl edit svc stable-grafana -n prometheus
@@ -278,14 +278,14 @@ Observe the output change, adding the load balancer URL.
 <img width="959" alt="image" src="https://github.com/user-attachments/assets/88743afb-b856-410b-a8f4-13498022a7f8">
 
 
-## Access Grafana GUI
+### Access Grafana GUI
 Access the Grafana GUI with the load balancer URL and login to Grafana:
 
 ### Credentials:
 - username: admin
 - password: prom-operator
 
-## Visualize Metrics
+### Visualize Metrics
 To visualize metrics, add a data source:
 
 1. Click **Add data source** and select Prometheus.
