@@ -189,7 +189,6 @@ spec:
 
 ### Set up monitoring and logging using Prometheus, Grafana
 
-```markdown
 # Helm Chart Installations:
 
 ```bash
@@ -214,6 +213,8 @@ helm repo add prometheus-community https://prometheus-community.github.io/helm-c
 
 ```bash
 helm repo ls
+<img width="530" alt="image" src="https://github.com/user-attachments/assets/286962f9-e0ad-40fb-b41a-88a2bd4c9ef4">
+
 helm repo update
 ```
 
@@ -226,12 +227,17 @@ kubectl create namespace prometheus
 ```bash
 helm install stable prometheus-community/kube-prometheus-stack -n prometheus
 ```
+<img width="611" alt="image" src="https://github.com/user-attachments/assets/0a831ae1-f389-41a3-9cee-7a873303ee89">
 
 ## Check Installation Status
 ```bash
 kubectl get pods -n prometheus
+
+<img width="611" alt="image" src="https://github.com/user-attachments/assets/6d986a88-2f09-42be-992c-89a629a56550">
+
 kubectl get svc -n prometheus # you should see both prometheus and grafana services here
 ```
+<img width="614" alt="image" src="https://github.com/user-attachments/assets/0d4719aa-f210-4b5e-958c-bcf4ced56bf0">
 
 ## Expose Prometheus for External Access
 ```bash
@@ -269,6 +275,8 @@ type: ClusterIP
 kubectl get svc -n prometheus
 ```
 Observe the output change, adding the load balancer URL.
+<img width="959" alt="image" src="https://github.com/user-attachments/assets/88743afb-b856-410b-a8f4-13498022a7f8">
+
 
 ## Access Grafana GUI
 Access the Grafana GUI with the load balancer URL and login to Grafana:
@@ -288,6 +296,14 @@ The data source "prometheus" is already added by default.
 Open the dashboard panel to see the default available dashboards and click on the one that suits the visualization of the cluster environment.
 
 This will show a monitoring dashboard for all cluster nodes.
+<img width="683" alt="image" src="https://github.com/user-attachments/assets/995665f9-6e60-4d2c-9f0f-1bb2b019b4f6">
+
+<img width="734" alt="image" src="https://github.com/user-attachments/assets/13265223-f111-48ea-b23c-7bf33b20e5d6">
+
+<img width="728" alt="image" src="https://github.com/user-attachments/assets/faa0f2e1-270d-4d5c-84d1-82d116f3524f">
+
+<img width="724" alt="image" src="https://github.com/user-attachments/assets/b4e2ef24-ace6-43d6-bf85-f59d8f0d3d20">
+
 
 ## Implement CI/CD Pipelines for Automated Builds, Testing, and Deployments
 
