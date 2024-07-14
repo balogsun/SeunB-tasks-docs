@@ -187,7 +187,7 @@ spec:
   - **Ports**: Maps external port 80 to internal port 3000.
   - **Type**: Uses a LoadBalancer to expose the service externally.
 
-### Set up monitoring and logging using Prometheus, Grafana
+## Set up monitoring and logging using Prometheus, Grafana
 
 ### Helm Chart Installations:
 
@@ -232,9 +232,10 @@ helm install stable prometheus-community/kube-prometheus-stack -n prometheus
 ### Check Installation Status
 ```bash
 kubectl get pods -n prometheus
-
+```
 <img width="611" alt="image" src="https://github.com/user-attachments/assets/6d986a88-2f09-42be-992c-89a629a56550">
 
+```bash
 kubectl get svc -n prometheus # you should see both prometheus and grafana services here
 ```
 <img width="614" alt="image" src="https://github.com/user-attachments/assets/0d4719aa-f210-4b5e-958c-bcf4ced56bf0">
