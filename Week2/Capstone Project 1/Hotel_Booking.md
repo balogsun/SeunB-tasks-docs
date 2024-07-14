@@ -69,7 +69,7 @@ CMD ["npm", "start"]
 
 ## Kubernetes Cluster Setup
 
-I set up a Kubernetes cluster using the following Terraform modules in my repo: [Terraform EKS Module](https://github.com/balogsun/terraform-eks-with-basic-app.git) and steps sumamrized below:
+I set up a Kubernetes cluster using the following Terraform modules in my repo: [Terraform EKS Module](https://github.com/balogsun/terraform-eks-with-basic-app.git) and steps summarized below:
 
 - **Install AWS CLI**
   - Follow AWS documentation: https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
