@@ -235,10 +235,12 @@ kubectl get pods -n prometheus
 ```
 <img width="611" alt="image" src="https://github.com/user-attachments/assets/6d986a88-2f09-42be-992c-89a629a56550">
 
+
 ```bash
 kubectl get svc -n prometheus # you should see both prometheus and grafana services here
 ```
 <img width="614" alt="image" src="https://github.com/user-attachments/assets/0d4719aa-f210-4b5e-958c-bcf4ced56bf0">
+
 
 ### Expose Prometheus for External Access
 ```bash
@@ -468,8 +470,6 @@ Screenshot also attached.
 Screenshot also attached.
 <img width="521" alt="image" src="https://github.com/Makinates/SeunB-tasks-docs/assets/125329091/91a44d8e-256f-4ce7-b8d0-dbedd83b1ad9">
 
-- **Monitoring and Logging**: Set up monitoring and logging using Prometheus, Grafana, and the ELK stack.
-Link to my repo using prometheus to monitor a kunbernetes environment.  [Prometheus Monitoring Repo](https://github.com/Makinates/SeunB-tasks-docs/tree/288703b081afc29d2e7e85f4785bc41575ef621b/Week1/Task2/Monitoring%20and%20Logging)
 
 - **Security Best Practices**: I applied secrets management by setting up secrets and credentials in the GitHub repo settings, as well as place them as strings in the GitHub workflow.
 
