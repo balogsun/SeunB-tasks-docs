@@ -2221,5 +2221,5 @@ output "vpc_id" {
 
 This Terraform configuration will create a VPC, a subnet, an internet gateway, a route table, a security group, and an EC2 instance simulating the branch office server. Adjust the variables and configurations as needed for your specific requirements and cloud provider.
 
-
+### In Conclusion
 Completing this scenario will provide you with practical experience in network administration, enabling you to apply the concepts and commands learned to address real-world challenges faced by DevOps engineers and system administrators.
