@@ -16,12 +16,12 @@ The concept remains the same whether you use on-prem or cloud resources.
 
 ### Diagram Details:
 
- **Main Office VPN Gateway**: Connects to the Branch Router via a VPN tunnel.
- **Branch Router**:  Provides internet access and routes traffic between the branch office and the main office via the VPN tunnel.
- **Branch Switch**:  Central hub connecting all devices within the branch office.
- **Peripheral Devices**: Connected directly to the Branch Switch.
- **Branch Server**: Manages DNS, VPN, DHCP, and NTP services.
- **Client Desktops**: Connect to the Branch Switch to access network resources and services.
+- **Main Office VPN Gateway**: Connects to the Branch Router via a VPN tunnel.
+- **Branch Router**:  Provides internet access and routes traffic between the branch office and the main office via the VPN tunnel.
+- **Branch Switch**:  Central hub connecting all devices within the branch office.
+- **Peripheral Devices**: Connected directly to the Branch Switch.
+- **Branch Server**: Manages DNS, VPN, DHCP, and NTP services.
+- **Client Desktops**: Connect to the Branch Switch to access network resources and services.
 
 ## Using VMware Workstation, I took the steps below to deploy 3 VMs and achieve the network configuration:
 
