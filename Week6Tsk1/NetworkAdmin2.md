@@ -11,9 +11,21 @@ The concept remains the same whether you use on-prem or cloud resources.
 
 # Deploying 3 VMs Using VMware Workstation
 
-Using VMware Workstation, I took the steps below to deploy 3 VMs and achieve the network configuration:
+## Network Architecture Diagram:
+<img width="399" alt="image" src="https://github.com/user-attachments/assets/e3d8a08f-10fd-4364-b3e1-4407b0015987">
 
-## Create Three VMs
+### Diagram Details:
+
+ **Main Office VPN Gateway**: Connects to the Branch Router via a VPN tunnel.
+ **Branch Router**:  Provides internet access and routes traffic between the branch office and the main office via the VPN tunnel.
+ **Branch Switch**:  Central hub connecting all devices within the branch office.
+ **Peripheral Devices**: Connected directly to the Branch Switch.
+ **Branch Server**: Manages DNS, VPN, DHCP, and NTP services.
+ **Client Desktops**: Connect to the Branch Switch to access network resources and services.
+
+## Using VMware Workstation, I took the steps below to deploy 3 VMs and achieve the network configuration:
+
+### Create Three VMs
 
 Create three VMs using VMware Workstation and a predefined VMDK disk (located at [OSBoxes](https://www.osboxes.org/ubuntu/#ubuntu-24-04-vmware)), follow these steps:
 
