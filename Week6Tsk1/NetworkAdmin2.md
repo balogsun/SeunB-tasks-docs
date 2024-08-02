@@ -328,10 +328,12 @@ systemctl restart named.service
 sudo apt update
 sudo apt install bind9 bind9utils bind9-doc -y
 ```
-# Allow incoming DNS traffic on port 53 (UDP)
+
+### Configure iptables to permit incoming dns queries from client systems. 
+#### Allow incoming DNS traffic on port 53 (UDP)
 sudo iptables -A INPUT -p udp --dport 53 -j ACCEPT
 
-# Allow incoming DNS traffic on port 53 (TCP)
+#### Allow incoming DNS traffic on port 53 (TCP)
 sudo iptables -A INPUT -p tcp --dport 53 -j ACCEPT
 
 # Save the iptables rules
@@ -387,21 +389,17 @@ Edit the BIND9 configuration files to set up the branch server:
   };
   ```
 
-#### 3. Restart BIND9
+#### 3. Restart and enable BIND9 service at every system reboot
 
 ```bash
 sudo systemctl restart bind9
 sudo systemctl enable bind9
-sudo systemctl status bind9
-
 ```
-
-### Verify Configuration
 
 #### Check Zone Transfer Logs on Branch Server
 
 ```bash
-sudo journalctl -u bind9
+sudo systemctl status bind9
 ```
 
 #### Test DNS Resolution
@@ -485,9 +483,6 @@ network:
      nslookup google.com
      ```
 
-
-
-   
 nano /etc/hosts
 192.168.1.10   main.abcb.com
 192.168.5.10   branch.abcb.com
@@ -511,7 +506,7 @@ nano /etc/hosts
 
 By following these steps, you should have a working DNS setup where the branch office can resolve both local and external domains through the main office DNS server.
 
-=============================================
+
 ### Steps to Deploy Tinc VPN
 
 **Tinc VPN** is a flexible and powerful VPN daemon that supports full-mesh routing and dynamic links between nodes. Here's how to deploy Tinc VPN on both the main server and branch server.
@@ -677,7 +672,7 @@ By following these steps, you should have a working DNS setup where the branch o
    -----END RSA PUBLIC KEY-----
    ```
    
-Ensure the hosts files, main and branch exists on both servers. [copy each to each other]
+Ensure the hosts files, main and branch exists on both servers. [copy them all to each other]
 
 ### Step 6: Start Tinc VPN
 
@@ -710,16 +705,9 @@ Ensure the hosts files, main and branch exists on both servers. [copy each to ea
     ifconfig tun0
    ```
 
-=============================
+### Setup DHCP on Branch Office:
 
-### Branch Office Setup:
-
-1. **Configure DHCP (isc-dhcp-server):**
-### On the Branch Server
-
-#### 1. **Install and Configure DHCP Server**
-
-1. **Install DHCP Server:**
+1. **Install DHCP (isc-dhcp-server):**
 
    ```bash
    sudo apt update
@@ -766,10 +754,10 @@ Ensure the hosts files, main and branch exists on both servers. [copy each to ea
 
 4. **Restart DHCP Server:**
 
-   Restart the DHCP server to apply the changes:
+   Activate and start the DHCP server to apply the changes:
 
    ```bash
-   sudo systemctl restart isc-dhcp-server
+   sudo systemctl start isc-dhcp-server
    systemctl status isc-dhcp-server
    systemctl enable isc-dhcp-server
    ```
@@ -805,23 +793,23 @@ network:
           - 8.8.4.4
    ```
 
-3. **Apply the Configuration:**
-
-   Apply the Netplan configuration:
+3. **Apply the Netplan configuration:**
 
    ```bash
    sudo netplan apply
    ```
    
-   A new network will be created and will then need to be attached to ens33, then reboot.
+   A new network will be created and will then need to be attached to ens33, then reboot so that it can pickup an IP. Or you can use below command to configure the network to be auto assigned an IP.
+
+```
+sudo nmcli con add type ethernet ifname ens33 con-name netplan-ens33 ipv4.method auto
+```
 
 ### Verify the Setup
 
 1. **Check DHCP Lease on Client:**
 
 nmcli con show
-nmcli con delete BranchOfficeNet
-sudo nmcli con add type ethernet ifname ens33 con-name netplan-ens33 ipv4.method auto
 sudo nmcli con up netplan-ens33
 nmcli device show ens33
 nmcli device status
@@ -834,25 +822,10 @@ nmcli con show netplan-ens33
    ip addr show ens33
    ```
 
-   You should see an IP address within the range specified in the DHCP server configuration (e.g., `192.168.5.50` to `192.168.5.100`).
-
-2. **Check DHCP Logs on Branch Server:**
-
-   can check the DHCP logs on the branch server to see the lease assignments:
-
-   ```bash
-   sudo tail -f /var/log/syslog | grep dhcpd
-   ```
-   
-
-
-- **Branch Server:** Configured as a DHCP server using `isc-dhcp-server`.
-- **Client Server:** Configured to obtain IP address via DHCP using Netplan.
+   You should see an IP address within the range specified in the DHCP server configuration (e.g., `192.168.5.15` to `192.168.5.100`).
 
 By following these steps, your branch server will act as a DHCP server, and the client server will automatically receive its IP address from the branch server when powered up.
 
-==========================================
-==========================================
 
 # Provide Internet Access from Branch Office Server to Client System
 
@@ -892,19 +865,13 @@ Use `iptables` to configure NAT on the branch office server. This will allow the
 
 Run the following commands:
 
-```bash [this one is to delete]
-sudo iptables -t nat -D POSTROUTING -o ens38 -j MASQUERADE
-sudo iptables -D FORWARD -i ens33 -o ens38 -m state --state RELATED,ESTABLISHED -j ACCEPT
-sudo iptables -D FORWARD -i ens38 -o ens33 -j ACCEPT
-```
-OR
+```bash 
 sudo iptables -t nat -A POSTROUTING -o ens38 -j MASQUERADE
 sudo iptables -A FORWARD -i ens38 -o ens33 -m state --state RELATED,ESTABLISHED -j ACCEPT
 sudo iptables -A FORWARD -i ens33 -o ens38 -j ACCEPT
+```
 
-
-
-Replace `<internet_interface>` with the name of the network interface connected to the internet (e.g., `eth0`, `ens33`) and `<client_interface>` with the name of the network interface connected to the client system (e.g., `eth1`, `ens34`).
+Replace `<internet_interface>` with the name of the network interface connected to the internet (e.g., `ens33`) and `<client_interface>` with the name of the network interface connected to the client system (e.g., `ens34`).
 
 ## 3. Save the `iptables` Configuration
 
@@ -912,12 +879,11 @@ To ensure that your `iptables` rules persist after a reboot, you need to save th
 
 Save the rules:
 
-Install `iptables-persistent` to load the rules at boot:
+Install `iptables-persistent` to load the rules at boot [if not already installed]:
 
 ```bash
 sudo apt-get install iptables-persistent
 ```
-
 
 ```bash
 sudo sh -c "iptables-save > /etc/iptables/rules.v4"
@@ -950,11 +916,12 @@ network:
       nameservers:
         addresses:
 #         - 8.8.8.8
-		  - 192.168.5.10
+	  - 192.168.5.10
           - 8.8.4.4
 
-
+```
 sudo netplan apply
+```
 
 ## 5. Test the Configuration
 
@@ -964,113 +931,9 @@ Test the internet connectivity from the client system by pinging an external web
 ping google.com
 ```
 
----
+### NTP setup
 
-# Create a Systemd Service to Apply Network Routes on Boot
-
-To create a systemd service that applies network routes on boot, follow these steps:
-
-## 1. Create a Script to Apply the Routes
-
-First, create a script that applies the routes. Let’s place this script in `/usr/local/bin` and make it executable.
-
-### Create the Script
-
-```bash
-sudo nano /usr/local/bin/setup-routes.sh
-```
-
-### Add the Route Configuration
-
-Add the following content to the script:
-
-```bash
-#!/bin/bash
-
-# Remove any existing default route via the specified gateway
-ip route del default via 192.168.5.10 2>/dev/null
-
-# Add the default route
-ip route add default via 192.168.5.10
-```
-
-Replace `192.168.5.10` with your actual gateway if needed.
-
-### Make the Script Executable
-
-```bash
-sudo chmod +x /usr/local/bin/setup-routes.sh
-```
-
-## 2. Create a Systemd Service File
-
-Next, create a systemd service file that will run this script on boot.
-
-### Create the Service File
-
-```bash
-sudo nano /etc/systemd/system/setup-routes.service
-```
-
-### Add the Service Configuration
-
-Add the following content to the service file:
-
-```ini
-[Unit]
-Description=Apply Network Routes
-After=network.target
-
-[Service]
-Type=oneshot
-ExecStart=/usr/local/bin/setup-routes.sh
-RemainAfterExit=true
-
-[Install]
-WantedBy=multi-user.target
-```
-
-This configuration sets up a one-time service that runs after the network is up and remains active after execution.
-
-### Reload systemd and Enable the Service
-
-Reload systemd to recognize the new service and enable it to run at boot:
-
-```bash
-sudo systemctl daemon-reload
-sudo systemctl enable setup-routes.service
-```
-
-### Start the Service Manually (Optional)
-
-If you want to start the service immediately without rebooting, you can use:
-
-```bash
-sudo systemctl start setup-routes.service
-```
-
-## 3. Verify the Service
-
-Check the status of the service to ensure it is working correctly:
-
-```bash
-sudo systemctl status setup-routes.service
-```
-
-You should see that the service is active and running without errors. If there are issues, the logs can help diagnose the problem:
-
-```bash
-journalctl -u setup-routes.service
-```
-
-### Summary
-
-- **Script Location:** `/usr/local/bin/setup-routes.sh`
-- **Service File Location:** `/etc/systemd/system/setup-routes.service`
-
----
-
-To set up Chrony where the client server receives time from the branch server, follow these steps:
+I will be using `chrony` set up the NTP service, where the client system receives time sychronization from the branch server, following these steps:
 
 ### On the Branch Server
 
@@ -1097,10 +960,20 @@ allow 192.168.5.0/24
 
 This `allow` directive permits the specified network to access the time service. Adjust the network range if necessary.
 
-3. **Restart Chrony:**
+Configure IPtables to permit NTP service syncronization on port 123 from client systems:
+
+```
+sudo iptables -A INPUT -p udp --dport 123 -j ACCEPT
+sudo iptables -A OUTPUT -p udp --sport 123 -j ACCEPT
+
+sudo iptables-save | sudo tee /etc/iptables/rules.v4
+sudo iptables -L -v -n
+```
+
+3. **Start Chrony:**
 
 ```bash
-sudo systemctl restart chrony
+sudo systemctl start chrony
 sudo systemctl enable chrony
 ```
 
@@ -1119,14 +992,6 @@ sudo apt-get update
 sudo apt-get install chrony -y
 ```
 
-sudo iptables -A INPUT -p udp --dport 123 -j ACCEPT
-sudo iptables -A OUTPUT -p udp --sport 123 -j ACCEPT
-
-sudo iptables-save | sudo tee /etc/iptables/rules.v4
-sudo iptables -L -v -n
-
-
-
 2. **Configure Chrony:**
 
 Edit the Chrony configuration file:
@@ -1138,13 +1003,13 @@ sudo nano /etc/chrony/chrony.conf
 Add the branch server's IP address as the NTP server:
 
 ```plaintext
-server 192.168.5.10 iburst
+server 192.168.5.10 iburst #Branch server IP address
 ```
 
-3. **Restart Chrony:**
+3. **Start Chrony:**
 
 ```bash
-sudo systemctl restart chrony
+sudo systemctl start chrony
 sudo systemctl enable chrony
 ```
 
@@ -1168,9 +1033,9 @@ To ensure that the client server is correctly synchronizing its time from the br
 chronyc sources
 ```
 
-You should see the branch server (`192.168.5.10`) listed as a source.
+You should see the branch server (`192.168.5.10` or its `hostname`) listed as a source.
 
-2. **Check Tracking:**
+2. **Other chrony commands are listed below:**
 
 ```bash
 chronyc tracking
@@ -1178,16 +1043,10 @@ sudo chronyc -a makestep
 chronyc activity
 chronyc serverstats
 chronyc sources -v
-
-```
-
-This command shows the current time synchronization status.
 ```
 
 
-======================================
-
-To set up Snort to monitor for suspicious activity on your servers, follow these steps:
+## To set up Snort to monitor for suspicious activity on your servers, follow these steps:
 
 ### 1. Install Snort
 
@@ -1217,15 +1076,13 @@ var HOME_NET [192.168.1.0/24,10.0.0.0/24,192.168.79.0/24]
 var EXTERNAL_NET !$HOME_NET
 ```
 
-for branch:
+for branch server:
 var HOME_NET [192.168.5.0/24,10.0.0.0/24,192.168.79.0/24]
 var EXTERNAL_NET !$HOME_NET
-
 
 for client:
 var HOME_NET 192.168.5.0/24
 var EXTERNAL_NET !$HOME_NET
-
 
 #### Include Rule Files:
 
@@ -1233,17 +1090,6 @@ Ensure the rule paths are correctly specified:
 
 ```plaintext
 echo 'include $RULE_PATH/local.rules' >> /etc/snort/snort.conf
-```
-
-### 3. Update Snort Rules (optional)
-
-You can download and update Snort rules from the official Snort website or use community rules.
-
-#### Download Community Rules:
-
-```bash
-wget https://www.snort.org/downloads/community/community-rules.tar.gz
-tar -xvzf community-rules.tar.gz -C /etc/snort/rules
 ```
 
 ### 4. Create Local Rules
@@ -1281,7 +1127,6 @@ Test the configuration to ensure there are no syntax errors:
 sudo snort -T -c /etc/snort/snort.conf
 ```
 
-
 ### 6. Run Snort
 
 Run Snort in IDS mode:
@@ -1291,17 +1136,14 @@ You can run Snort multiple times, each time specifying a different interface:
 
 ```sh
 snort -A console -c /etc/snort/snort.conf -i <network-interface>
-snort -A console -c /etc/snort/snort.conf -i ens33
-snort -A console -c /etc/snort/snort.conf -i eth1
-
-snort -A console -c /etc/snort/snort.conf -i eth0 &
+snort -A console -c /etc/snort/snort.conf -i ens33 &
 snort -A console -c /etc/snort/snort.conf -i eth1 &
-snort -A console -c /etc/snort/snort.conf -i eth2 &
-
+```
 
 Replace `<network-interface>` with your network interface, for example, `ens33`.
 
 OR 
+
 ### 7. Automate Snort Startup
 
 To ensure Snort starts on boot, create a systemd service file.
@@ -1328,9 +1170,8 @@ RestartSec=5
 [Install]
 WantedBy=multi-user.target
 ```
-=====
 
-Create another Systemd Service File for vpn tunnel [for branch and main servers]:
+#### Create another Systemd Service File for vpn tunnel [connecting branch and main servers]:
 ```bash
 sudo nano /etc/systemd/system/tun.service
 ```
@@ -1351,17 +1192,16 @@ RestartSec=5
 [Install]
 WantedBy=multi-user.target
 ```
+
+#### Start the services
 ```bash
 systemctl daemon-reload
 systemctl enable tun.service
 systemctl start tun.service
-systemctl stop tun.service
 
 systemctl enable snort33.service
 systemctl start snort33.service
 systemctl status snort33.service
-systemctl stop snort.service
-systemctl status tun.service
 ```
 
 ### 8. Monitor Snort Logs
@@ -1374,7 +1214,7 @@ tail -f /var/log/snort/snort.alert.fast
 
 By following these steps, Snort will monitor your network traffic for suspicious activity and log alerts based on the rules defined. I can optionally adjust and expand the rules and configuration to match the specific requirements and threats relevant to your environment.
 
-===============================
+## COnfigure NMAP:
 To use `nmap` for network scanning and to ensure that all expected services are running and accessible, follow these steps:
 
 ### 1. **Install Nmap on branch server**
@@ -1477,11 +1317,8 @@ Add an entry to run `nmap` at a regular interval, e.g., daily at midnight:
 
 These steps will help ensure all expected services are running and accessible on your network.
 
-=
-==================================================
+### Capture network packets with `tcpdump`
 Capturing and analyzing network traffic using `tcpdump` and `Wireshark` can help you verify that your VPN is working correctly and identify any potential issues. Below are the steps to perform this task on both the main and branch servers.
-
-### Step 1: Capture Network Traffic with `tcpdump`
 
 #### Install `tcpdump` if not already pre-installed.
 
@@ -1525,7 +1362,6 @@ After capturing the traffic, transfer the `.pcap` files to your local machine fo
 ```bash
 scp user@branch_server:/path/to/vpn_traffic.pcap /local/path/
 scp user@main_server:/path/to/vpn_traffic.pcap /local/path/
-scp main_vpn_traffic.pcap root@10.0.0.2:/root
 ```
 
 ### Step 3: Analyze Traffic with Wireshark
@@ -1548,8 +1384,9 @@ Wireshark is available for Windows, macOS, and Linux. You can download it from t
 
 By following these steps, you can capture and analyze the network traffic on both your main and branch servers, verify the VPN functionality, and troubleshoot any potential issues using `tcpdump` and Wireshark.
 
-===============================
-we will also install ansible and Based on the manual steps I have used to initially setup the configuration, I will create Ansible playbooks to automate the setup for DHCP, DNS, NTP, and basic firewall rules. 
+## AUTOMATION
+###  Configure Ansible Playbooks
+I will also install ansible and Based on the manual steps I have used to initially setup the configuration, I will create Ansible playbooks to automate the setup for DHCP, DNS, NTP, and basic firewall rules. 
 
 Here is a code file containing the steps to install and configure Ansible on an Ubuntu system for this environment.
 
@@ -1987,16 +1824,16 @@ ansible-playbook -i hosts firewall.yml
 
 These playbooks will automate the configuration of DHCP, DNS, NTP with iptables rules, and basic firewall rules on the specified servers.
 
-================
+### Infrastucture as code:
 To use Vagrant to provision a VM on VMware Workstation, simulating an additional branch server and client system, follow these steps. This guide will cover installing the necessary tools, setting up Vagrant, and creating Vagrantfiles to provision the VMs.
 
 ### Prerequisites
 
 1. **VMware Workstation**: Ensure VMware Workstation is installed.
 2. **Vagrant**: Install Vagrant on your system.
-   - [Vagrant Installation Guide](https://www.vagrantup.com/docs/installation)
+   - [Vagrant Installation Guide](https://developer.hashicorp.com/vagrant/install)
 3. **Vagrant VMware Utility**: Install the Vagrant VMware Utility.
-   - [Vagrant VMware Utility Installation Guide](https://www.vagrantup.com/docs/providers/vmware/installation)
+   - [Vagrant VMware Utility Installation Guide](https://developer.hashicorp.com/vagrant/docs/providers/vmware/vagrant-vmware-utility)
 4. **Vagrant VMware Desktop Plugin**: Install the Vagrant VMware Desktop plugin.
    - Run the following command in your terminal:
      ```sh
@@ -2010,8 +1847,8 @@ To use Vagrant to provision a VM on VMware Workstation, simulating an additional
 Create a directory for your Vagrant project, and navigate into it:
 
 ```sh
-mkdir vagrant-branch-client
-cd vagrant-branch-client
+mkdir vagrant
+cd vagrant
 ```
 
 #### 2. Initialize Vagrant
