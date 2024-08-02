@@ -180,9 +180,11 @@ Now you can start the VM with the imported disk [.vmdk file] you have selected.
    ip addr show
    ifconfig -a
    ```
+   
    <img width="453" alt="image" src="https://github.com/user-attachments/assets/a63e56b4-0eee-40f7-a219-3b9f61cfb721">
-
+   
    <img width="481" alt="image" src="https://github.com/user-attachments/assets/5f56f068-6dee-4151-9365-a1aa30fe2d1c">
+   
    
 ### Configuration for Client VM
 
