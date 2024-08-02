@@ -2020,218 +2020,326 @@ ansible-playbook -i hosts firewall.yml
 
 These playbooks will automate the configuration of DHCP, DNS, NTP with iptables rules, and basic firewall rules on the specified servers.
 
+================
+To use Vagrant to provision a VM on VMware Workstation, simulating an additional branch server and client system, follow these steps. This guide will cover installing the necessary tools, setting up Vagrant, and creating Vagrantfiles to provision the VMs.
 
-Here's a detailed Terraform configuration to provision and manage cloud resources for a branch server on AWS. This configuration includes creating a VPC, subnet, internet gateway, route table, security group, and an EC2 instance. This example assumes the use of AWS as the cloud provider, but the principles can be adapted for other providers like Google Cloud or Azure.
+### Prerequisites
 
-### Prerequisites:
-1. **Terraform installed:** Follow the instructions on the [Terraform installation page](https://learn.hashicorp.com/tutorials/terraform/install-cli) to install Terraform.
-2. **AWS CLI configured:** Ensure you have the AWS CLI configured with your credentials (`aws configure`).
+1. **VMware Workstation**: Ensure VMware Workstation is installed.
+2. **Vagrant**: Install Vagrant on your system.
+   - [Vagrant Installation Guide](https://www.vagrantup.com/docs/installation)
+3. **Vagrant VMware Utility**: Install the Vagrant VMware Utility.
+   - [Vagrant VMware Utility Installation Guide](https://www.vagrantup.com/docs/providers/vmware/installation)
+4. **Vagrant VMware Desktop Plugin**: Install the Vagrant VMware Desktop plugin.
+   - Run the following command in your terminal:
+     ```sh
+     vagrant plugin install vagrant-vmware-desktop
+     ```
 
-### Directory Structure:
-Create a directory structure for your Terraform files:
-```
-branch-office
-├── main.tf
-├── variables.tf
-├── outputs.tf
-```
+### Steps to Provision VMs with Vagrant
 
-### `variables.tf`
-Define variables for your configuration:
-```hcl
-variable "region" {
-  description = "The AWS region to deploy resources"
-  default     = "us-west-2"
-}
+#### 1. Create a Directory for Your Vagrant Project
 
-variable "instance_type" {
-  description = "EC2 instance type"
-  default     = "t2.micro"
-}
+Create a directory for your Vagrant project, and navigate into it:
 
-variable "disk_size" {
-  description = "Size of the EBS volume in GB"
-  default     = 20
-}
-
-variable "subnet_cidr" {
-  description = "CIDR block for the subnet"
-  default     = "192.168.5.0/24"
-}
-
-variable "ami_id" {
-  description = "AMI ID for the EC2 instance"
-  default     = "ami-0c55b159cbfafe1f0"  # Update this to the appropriate AMI ID
-}
-
-variable "key_name" {
-  description = "Name of the key pair"
-  default     = "my-key"
-}
+```sh
+mkdir vagrant-branch-client
+cd vagrant-branch-client
 ```
 
-### `main.tf`
-Define the main configuration for your resources:
-```hcl
-provider "aws" {
-  region = var.region
-}
+#### 2. Initialize Vagrant
 
-# Create a VPC
-resource "aws_vpc" "branch_vpc" {
-  cidr_block = var.vpc_cidr
+Initialize Vagrant in the directory:
 
-  tags = {
-    Name = "BranchOfficeVPC"
-  }
-}
-
-# Create a subnet
-resource "aws_subnet" "branch_subnet" {
-  vpc_id     = aws_vpc.branch_vpc.id
-  cidr_block = var.subnet_cidr
-  availability_zone = "${var.region}a"  # Adjust based on your region
-
-  tags = {
-    Name = "BranchOfficeSubnet"
-  }
-}
-
-# Create an Internet Gateway
-resource "aws_internet_gateway" "branch_gw" {
-  vpc_id = aws_vpc.branch_vpc.id
-
-  tags = {
-    Name = "BranchOfficeInternetGateway"
-  }
-}
-
-# Create a route table
-resource "aws_route_table" "branch_rt" {
-  vpc_id = aws_vpc.branch_vpc.id
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.branch_gw.id
-  }
-
-  tags = {
-    Name = "BranchOfficeRouteTable"
-  }
-}
-
-# Associate the route table with the subnet
-resource "aws_route_table_association" "branch_rta" {
-  subnet_id      = aws_subnet.branch_subnet.id
-  route_table_id = aws_route_table.branch_rt.id
-}
-
-# Create a security group
-resource "aws_security_group" "branch_sg" {
-  vpc_id = aws_vpc.branch_vpc.id
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 53
-    to_port     = 53
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 53
-    to_port     = 53
-    protocol    = "udp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 123
-    to_port     = 123
-    protocol    = "udp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "BranchOfficeSecurityGroup"
-  }
-}
-
-# Create an EC2 instance
-resource "aws_instance" "branch_server" {
-  ami           = var.ami_id
-  instance_type = var.instance_type
-  key_name      = var.key_name
-  subnet_id     = aws_subnet.branch_subnet.id
-  security_groups = [aws_security_group.branch_sg.name]
-
-  root_block_device {
-    volume_size = var.disk_size
-  }
-
-  tags = {
-    Name = "BranchServer"
-  }
-}
-
+```sh
+vagrant init
 ```
 
-### `outputs.tf`
-Define outputs to show after the infrastructure is created:
-```hcl
-output "instance_id" {
-  description = "The ID of the branch server instance"
-  value       = aws_instance.branch_server.id
-}
+This will create a `Vagrantfile` in the directory. You will modify the `Vagrantfile`s to contain the resource creation for the 3 VMs.
+Check for latest OS version at https://app.vagrantup.com/generic
 
-output "instance_public_ip" {
-  description = "The public IP address of the branch server"
-  value       = aws_instance.branch_server.public_ip
-}
+To add additional configurations to each of the VMs, you can use a shell provisioner in the Vagrantfile. Below, I've created a script to set up DHCP, iptables, DNS, Chrony, and firewall rules. The script will be called provision.sh, and it will be referenced in the Vagrantfile for each VM.
 
-output "subnet_id" {
-  description = "The ID of the subnet"
-  value       = aws_subnet.branch_subnet.id
-}
+```ruby
+Vagrant.configure("2") do |config|
+  # Define the "main" VM
+  config.vm.define "main" do |main|
+    main.vm.box = "generic/ubuntu2310"
+    main.vm.network "private_network", ip: "192.168.1.10"
+    main.vm.hostname = "main"
 
-output "vpc_id" {
-  description = "The ID of the VPC"
-  value       = aws_vpc.branch_vpc.id
-}
+    main.vm.provider "vmware_desktop" do |v|
+      v.vmx["memsize"] = "2048"
+      v.vmx["numvcpus"] = "2"
+      v.vmx["disk.size"] = "20000"
+    end
+
+    main.vm.provision "shell", path: "C:/Users/balog/Desktop/vagrant-branch-client/provision.sh"
+  end
+
+  # Define the "branch" VM
+  config.vm.define "branch" do |branch|
+    branch.vm.box = "generic/ubuntu2310"
+    branch.vm.network "private_network", ip: "192.168.5.10"
+    branch.vm.hostname = "branch"
+
+    branch.vm.provider "vmware_desktop" do |v|
+      v.vmx["memsize"] = "2048"
+      v.vmx["numvcpus"] = "2"
+      v.vmx["disk.size"] = "20000"
+    end
+
+    branch.vm.provision "shell", path: "C:/Users/balog/Desktop/vagrant-branch-client/provision.sh"
+  end
+
+  # Define the "client" VM
+  config.vm.define "client" do |client|
+    client.vm.box = "generic/ubuntu2310"
+    client.vm.network "private_network", type: "dhcp"
+    client.vm.hostname = "client"
+
+    client.vm.provider "vmware_desktop" do |v|
+      v.vmx["memsize"] = "2048"
+      v.vmx["numvcpus"] = "2"
+      v.vmx["disk.size"] = "20000"
+    end
+
+    client.vm.provision "shell", path: "C:/Users/balog/Desktop/vagrant-branch-client/provision.sh"
+  end
+end
 ```
 
-### Deploy the Infrastructure
-1. **Initialize Terraform:**
-   ```bash
-   terraform init
-   ```
+#### Script provision for vagrant file
+#!/bin/bash
 
-2. **Plan the deployment:**
-   ```bash
-   terraform plan
-   ```
+# Update and install necessary packages
+sudo apt-get update
 
-3. **Apply the configuration:**
-   ```bash
-   terraform apply
-   ```
+# Install packages based on hostname
+if [[ $(hostname) == "main" || $(hostname) == "branch" ]]; then
+    sudo apt-get install -y bind9 bind9utils bind9-doc tinc
 
-   Type `yes` when prompted to confirm the changes.
+    if [[ $(hostname) == "branch" ]]; then
+        sudo apt-get install -y isc-dhcp-server chrony
+    fi
+elif [[ $(hostname) == "client" ]]; then
+    sudo apt-get install -y tinc chrony
+fi
 
-This Terraform configuration will create a VPC, a subnet, an internet gateway, a route table, a security group, and an EC2 instance simulating the branch office server. Adjust the variables and configurations as needed for your specific requirements and cloud provider.
+# Configure BIND9 for Main Server
+if [[ $(hostname) == "main" ]]; then
+    # BIND9 Configuration
+    cat <<EOF | sudo tee /etc/bind/named.conf.local
+zone "abc.local" {
+    type master;
+    file "/etc/bind/db.abc.local";
+};
+
+zone "5.168.192.in-addr.arpa" {
+    type master;
+    file "/etc/bind/db.192.168.5";
+};
+EOF
+
+    cat <<EOF | sudo tee /etc/bind/db.abc.local
+\$TTL    604800
+@       IN      SOA     main.abc.local. admin.abc.local. (
+                           2         ; Serial
+                      604800         ; Refresh
+                       86400         ; Retry
+                     2419200         ; Expire
+                      604800 )       ; Negative Cache TTL
+;
+@       IN      NS      main.abc.local.
+main    IN      A       192.168.1.10
+branch  IN      A       192.168.5.10
+client  IN      A       192.168.5.15
+EOF
+
+    cat <<EOF | sudo tee /etc/bind/db.192.168.5
+\$TTL    604800
+@       IN      SOA     main.abc.local. admin.abc.local. (
+                           2         ; Serial
+                      604800         ; Refresh
+                       86400         ; Retry
+                     2419200         ; Expire
+                      604800 )       ; Negative Cache TTL
+;
+@       IN      NS      main.abc.local.
+10      IN      PTR     branch.abc.local.
+15      IN      PTR     client.abc.local.
+EOF
+
+    cat <<EOF | sudo tee /etc/bind/named.conf.options
+options {
+    directory "/var/cache/bind";
+
+    forwarders {
+        8.8.8.8;
+        8.8.4.4;
+    };
+
+    dnssec-validation auto;
+
+    listen-on-v6 { any; };
+};
+EOF
+
+    sudo systemctl start bind9
+
+# Configure BIND9 for Branch Server
+elif [[ $(hostname) == "branch" ]]; then
+    # BIND9 Configuration
+    cat <<EOF | sudo tee /etc/bind/named.conf.local
+zone "abc.local" {
+    type slave;
+    file "/var/cache/bind/db.abc.local";
+    masters { 192.168.1.10; };
+};
+
+zone "5.168.192.in-addr.arpa" {
+    type slave;
+    file "/var/cache/bind/db.192.168.5";
+    masters { 192.168.1.10; };
+};
+EOF
+
+    cat <<EOF | sudo tee /etc/bind/named.conf.options
+options {
+    directory "/var/cache/bind";
+
+    forwarders {
+        192.168.1.10;
+    };
+
+    dnssec-validation auto;
+
+    listen-on-v6 { any; };
+};
+EOF
+
+    sudo systemctl start bind9
+
+    # Configure DHCP Server
+    cat <<EOF | sudo tee /etc/dhcp/dhcpd.conf
+option domain-name "company.local";
+default-lease-time 600;
+max-lease-time 7200;
+
+subnet 192.168.5.0 netmask 255.255.255.0 {
+    range 192.168.5.15 192.168.5.50;
+    option routers 192.168.5.10;
+    option domain-name-servers 192.168.5.10, 8.8.8.8;
+}
+EOF
+
+    sudo sed -i 's/INTERFACESv4=""/INTERFACESv4="ens33"/' /etc/default/isc-dhcp-server
+
+    sudo systemctl start isc-dhcp-server
+
+    # Enable IP Forwarding and configure NAT
+    sudo sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/' /etc/sysctl.conf
+    sudo sysctl -p
+    sudo iptables -t nat -A POSTROUTING -o ens38 -j MASQUERADE
+    sudo iptables -A FORWARD -m state --state RELATED,ESTABLISHED -j ACCEPT
+    sudo iptables -A FORWARD -j ACCEPT
+    sudo sh -c "iptables-save > /etc/iptables/rules.v4"
+#    sudo apt-get install iptables-persistent -y
+
+    # Configure Tinc VPN for Branch Server
+    sudo mkdir -p /etc/tinc/vpn/hosts
+
+    cat <<EOF | sudo tee /etc/tinc/vpn/tinc.conf
+Name = branch
+AddressFamily = ipv4
+Interface = tun0
+ConnectTo = main
+EOF
+
+    cat <<EOF | sudo tee /etc/tinc/vpn/tinc-up
+#!/bin/sh
+ifconfig \$INTERFACE 10.0.0.2 netmask 255.255.255.0
+EOF
+
+    cat <<EOF | sudo tee /etc/tinc/vpn/tinc-down
+#!/bin/sh
+ifconfig \$INTERFACE down
+EOF
+
+    sudo chmod +x /etc/tinc/vpn/tinc-up /etc/tinc/vpn/tinc-down
+
+    cat <<EOF | sudo tee /etc/tinc/vpn/hosts/branch
+Address = 192.168.5.10
+Subnet = 10.0.0.2/32
+EOF
+
+    sudo tincd -n vpn -K4096
+    sudo systemctl enable tinc@vpn
+    sudo systemctl start tinc@vpn
+
+# Client Configuration
+elif [[ $(hostname) == "client" ]]; then
+    # Configure Netplan
+    cat <<EOF | sudo tee /etc/netplan/01-netcfg.yaml
+network:
+  version: 2
+  ethernets:
+    ens33:
+      dhcp4: yes
+      routes:
+        - to: default
+          via: 192.168.5.10
+      nameservers:
+        addresses:
+          - 192.168.5.10
+          - 8.8.8.8
+EOF
+
+    sudo netplan apply
+
+    # Configure Chrony
+    sudo sed -i '/pool /d' /etc/chrony/chrony.conf
+    echo "server branch.abc.local iburst" | sudo tee -a /etc/chrony/chrony.conf
+    sudo systemctl start chrony
+    sudo systemctl enable chrony
+fi
+
+# Configure Chrony on Branch Server
+if [[ $(hostname) == "branch" ]]; then
+    sudo sed -i '/pool /d' /etc/chrony/chrony.conf
+    echo "server main.abc.local prefer iburst" | sudo tee -a /etc/chrony/chrony.conf
+    sudo systemctl start chrony
+    sudo systemctl enable chrony
+fi
+
+# Common Configuration
+# Set hostname and update /etc/hosts
+sudo hostnamectl set-hostname $(hostname).abc.local
+cat <<EOF | sudo tee -a /etc/hosts
+192.168.1.10 main.abc.local
+192.168.5.10 branch.abc.local
+192.168.5.15 client.abc.local
+EOF
+
+This provisioner will set up BIND9 for both the main and branch servers, configure Tinc VPN, set up DHCP on the branch server, and provide internet access to the client.
+
+
+#### 5. Start the VMs
+
+vagrant up 
+```
+#### 6. Verify the VMs
+
+Use vmware workstation to discover and launch the VM
+
+```bash
+vagrant halt
+vagrant destroy
+vagrant destroy -f
+vagrant validate
+vagrant plugin list
+vagrant status
+```
 
 ### In Conclusion
 Completing this scenario will provide you with practical experience in network administration, enabling you to apply the concepts and commands learned to address real-world challenges faced by DevOps engineers and system administrators.
