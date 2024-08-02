@@ -2110,6 +2110,8 @@ end
 ```
 
 #### Script provision for vagrant file
+
+```bash
 #!/bin/bash
 
 # Update and install necessary packages
@@ -2320,6 +2322,7 @@ cat <<EOF | sudo tee -a /etc/hosts
 192.168.5.10 branch.abc.local
 192.168.5.15 client.abc.local
 EOF
+```
 
 This provisioner will set up BIND9 for both the main and branch servers, configure Tinc VPN, set up DHCP on the branch server, and provide internet access to the client.
 
