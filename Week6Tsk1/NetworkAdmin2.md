@@ -41,7 +41,8 @@ Create three VMs using VMware Workstation and a predefined VMDK disk (located at
 
    - **Specify Disk File**
 
-     Select `I will install the operating system later` and click `next`
+     Select `I will install the operating system later` and click `next`.
+
      <img width="319" alt="image" src="https://github.com/user-attachments/assets/f8bad207-fa0f-45dd-9031-44b6120cfb8d">
 
      Select a guest operating system `Linux` and version `ubuntu`
