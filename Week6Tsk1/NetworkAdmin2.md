@@ -2179,14 +2179,13 @@ vagrant status
    ![Screenshot 2024-08-01 200203](https://github.com/user-attachments/assets/706c419b-3b11-46a7-8297-97be7f4c53b0)
 
 
+#### Other vagrant commands
 
 ```bash
-vagrant halt
-vagrant destroy
-vagrant destroy -f
-vagrant validate
-vagrant plugin list
-vagrant status
+vagrant halt #to halt the VM
+vagrant destroy #to remove the VM setup
+vagrant validate #to validate the configuration files in the vagrant directory
+vagrant status #show status of vagrant VMs
 ```
 
 ### In Conclusion
