@@ -38,15 +38,19 @@ Create three VMs using VMware Workstation and a predefined VMDK disk (located at
    For each of the three VMs (Main Office Server, Branch Office Server, and Client VM), follow these steps:
 
    - **Select File > New Virtual Machine...**
-   
-   - **Select Disk**
-
-     Choose "Use an existing virtual disk" and browse to the location of your predefined VMDK file.
 
    - **Specify Disk File**
 
-     Browse and select the predefined VMDK file.
+     Select `I will install the operating system later` and click `next`
+     <img width="319" alt="image" src="https://github.com/user-attachments/assets/f8bad207-fa0f-45dd-9031-44b6120cfb8d">
 
+     Select a guest operating system `Linux` and version `ubuntu`
+
+     Choose the location where you have kept the custom .vmdk file
+     Complete the setup and click `finish`
+     <img width="346" alt="image" src="https://github.com/user-attachments/assets/6f3a2aa0-789b-4c4a-b2b4-7c364e395220">
+
+     
    - **Name the Virtual Machine**
 
      Give a name to the virtual machine, e.g., "Main Office Server," "Branch Office Server," or "Client VM." Specify the location where you want to store the VM files.
@@ -56,6 +60,12 @@ Create three VMs using VMware Workstation and a predefined VMDK disk (located at
      Click "Finish" to complete the VM creation process.
 
    Repeat these steps for each of the three VMs.
+
+   Now select a virtual machine, click on `VM` then `settings`, this opens the VM properties, click `Add`, select `hard disk`, `scsi` `use an exisitng virtual disk`, browe for location of disk and click `finish`.
+   
+  <img width="549" alt="image" src="https://github.com/user-attachments/assets/eec72e38-88c8-4b79-b434-23fe8f18fe95">
+  
+Now you can start the VM with the imported disk [.vmdk file] you have selected. 
 
 ## Network Configuration
 
@@ -79,6 +89,9 @@ Create three VMs using VMware Workstation and a predefined VMDK disk (located at
      4. Disable the DHCP for this network.
      5. Rename VMnet3 to BranchOfficeNet.
 
+ 	<img width="444" alt="image" src="https://github.com/user-attachments/assets/f0ccf75b-1b0d-49af-a095-2588c9e35b3a">
+
+
 2. **Assign Networks to VMs:**
 
    - **Main Office Server:**
@@ -90,6 +103,7 @@ Create three VMs using VMware Workstation and a predefined VMDK disk (located at
      1. Go to the settings of the Branch Office Server VM.
      2. Under `Network Adapter`, add the network adapters.
      3. Attach the adapter to `VMnet3 (BranchOfficeNet)`.
+     <img width="554" alt="image" src="https://github.com/user-attachments/assets/f89a6608-3895-4a9f-b12f-c7d8f84e7371">
 
    - **Client VM:**
      1. Go to the settings of the Client VM.
@@ -127,16 +141,6 @@ Create three VMs using VMware Workstation and a predefined VMDK disk (located at
      sudo nmcli con up MainOfficeNet
      ```
 
-3. **Verify Configuration**
-
-   Verify the configuration:
-
-   ```bash
-   nmcli con show
-   nmcli con show --active
-   ip addr show
-   ```
-
 4. **Restart NetworkManager**
 
    Restart NetworkManager to apply the changes:
@@ -165,9 +169,20 @@ Create three VMs using VMware Workstation and a predefined VMDK disk (located at
 
    ```bash
    sudo nmcli con up BranchOfficeNet
-   sudo nmcli con up VPNNet
    ```
 
+   Verify the configuration:
+
+   ```bash
+   nmcli con show
+   nmcli con show --active
+   ip addr show
+   ifconfig -a
+   ```
+   <img width="453" alt="image" src="https://github.com/user-attachments/assets/a63e56b4-0eee-40f7-a219-3b9f61cfb721">
+
+   <img width="481" alt="image" src="https://github.com/user-attachments/assets/5f56f068-6dee-4151-9365-a1aa30fe2d1c">
+   
 ### Configuration for Client VM
 
 1. **Delete Existing Connections:**
@@ -190,19 +205,15 @@ Create three VMs using VMware Workstation and a predefined VMDK disk (located at
 
 ### Verify Configuration
 
-- **Check IP Address:**
-
-  ```bash
-  nmcli device show ens33
-  ip addr
-  ```
-
   - From the Client VM, ensure it gets an IP address via DHCP and check connectivity:
     ```bash
     nmcli device show ens33
 	ip route
     	ip addr
     ```
+    <img width="483" alt="image" src="https://github.com/user-attachments/assets/3a64eff6-1ebd-4d0b-93c7-f4386fd5929a">
+    <img width="490" alt="image" src="https://github.com/user-attachments/assets/8542e82f-ebff-408d-9342-b4ea07b8597a">
+    
 
 ## Setting Up DNS:
 #### Setting up DNS with BIND9 involves configuring both the main and branch servers to handle local domain resolution and forward external queries appropriately. Below are the detailed steps for setting this up.
@@ -239,6 +250,7 @@ Edit the BIND9 configuration files to set up the master server:
       file "/etc/bind/db.192.168.5";
   };
   ```
+<img width="395" alt="image" src="https://github.com/user-attachments/assets/4ce59ef1-60ef-478b-a839-c4c0b1a31164">
 
 - **Create Zone Files**
 
@@ -311,6 +323,7 @@ options {
     listen-on-v6 { any; };
 };
 ```
+<img width="469" alt="image" src="https://github.com/user-attachments/assets/f1023bd8-4b4a-49d9-bf28-5dfbd1a387b5">
 
 #### 4. Restart BIND9
 
@@ -388,6 +401,7 @@ Edit the BIND9 configuration files to set up the branch server:
       listen-on-v6 { any; };
   };
   ```
+    <img width="341" alt="image" src="https://github.com/user-attachments/assets/bab15fa9-90f9-41c8-89f5-83052274b843">
 
 #### 3. Restart and enable BIND9 service at every system reboot
 
@@ -563,6 +577,7 @@ By following these steps, you should have a working DNS setup where the branch o
 	AddressFamily = ipv4
 	Interface = tun0
    ```
+  <img width="324" alt="image" src="https://github.com/user-attachments/assets/ef0ca51f-28a5-4ff3-9a8c-a56c9933e239">
 
    **Branch Server (`branch`):**
    ```ini
@@ -584,6 +599,7 @@ By following these steps, you should have a working DNS setup where the branch o
    #!/bin/sh
    ifconfig $INTERFACE 10.0.0.1 netmask 255.255.255.0
    ```
+   <img width="345" alt="image" src="https://github.com/user-attachments/assets/07d50d4a-1925-4a74-9201-d2128d63ad83">
 
    **Branch Server:**
    ```bash
@@ -641,6 +657,7 @@ By following these steps, you should have a working DNS setup where the branch o
    Address = 192.168.5.10
    Subnet = 10.0.0.2/32
    ```
+   <img width="352" alt="image" src="https://github.com/user-attachments/assets/8482ccf0-b42c-4095-9850-1aba239b49cb">
 
 ### Step 5: Generate Tinc Keys
 
@@ -671,15 +688,17 @@ By following these steps, you should have a working DNS setup where the branch o
    (Branch Server public key here)
    -----END RSA PUBLIC KEY-----
    ```
-
+   
    **On Branch Server (`/etc/tinc/vpn/hosts/main`):**
    ```ini
    -----BEGIN RSA PUBLIC KEY-----
    (Main Server public key here)
    -----END RSA PUBLIC KEY-----
    ```
-   
-Ensure the hosts files, main and branch exists on both servers. [copy them all to each other]
+   <img width="419" alt="image" src="https://github.com/user-attachments/assets/051c3552-c09f-4568-a85b-ca40cb9c03c8">
+
+   Ensure the hosts files, main and branch exists on both servers. [copy them all to each other]
+   <img width="322" alt="image" src="https://github.com/user-attachments/assets/67d259aa-81c7-472f-9331-b6191fa25203">
 
 ### Step 6: Start Tinc VPN
 
@@ -696,6 +715,7 @@ Ensure the hosts files, main and branch exists on both servers. [copy them all t
    ```bash
    sudo systemctl status tinc@vpn
    ```
+   <img width="536" alt="image" src="https://github.com/user-attachments/assets/e75df1be-41c1-4c8e-b9dc-dd56ca2bc99b">
 
 ### Step 7: Verify the Connection
 
@@ -703,6 +723,8 @@ Ensure the hosts files, main and branch exists on both servers. [copy them all t
    ```bash
    ifconfig tun0
    ```
+   <img width="537" alt="image" src="https://github.com/user-attachments/assets/5cdb4af7-ceae-4487-8c52-f149416125e7">
+
 
 2. **Check the connectivity between the servers:**
    ```bash
@@ -711,6 +733,8 @@ Ensure the hosts files, main and branch exists on both servers. [copy them all t
    ssh osboxes@10.0.0.2 # From Main Server
     ifconfig tun0
    ```
+   <img width="426" alt="image" src="https://github.com/user-attachments/assets/c1b85459-493e-4329-a1b4-5d2bd4a0e6b4">
+   <img width="458" alt="image" src="https://github.com/user-attachments/assets/737c995e-818b-40cb-82bb-a9f8c0eb8763">
 
 ### Setup DHCP on Branch Office:
 
