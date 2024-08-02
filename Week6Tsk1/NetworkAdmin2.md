@@ -2326,8 +2326,10 @@ This provisioner will set up BIND9 for both the main and branch servers, configu
 
 #### 5. Start the VMs
 
+```
 vagrant up 
 ```
+
 #### 6. Verify the VMs
 
 Use vmware workstation to discover and launch the VM
