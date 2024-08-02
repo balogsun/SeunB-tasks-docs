@@ -401,6 +401,7 @@ sudo systemctl enable bind9
 ```bash
 sudo systemctl status bind9
 ```
+![Screenshot 2024-07-31 204515](https://github.com/user-attachments/assets/bb070436-a68c-47ea-b558-baa93d6ac287)
 
 #### Test DNS Resolution
 
@@ -412,6 +413,14 @@ dig branch.abc.local @localhost
 dig client.abc.local @localhost
 dig google.com @localhost
 ```
+![Screenshot 2024-07-31 204435](https://github.com/user-attachments/assets/6fe71dbf-04d3-4010-92a6-b07965f70fcd)
+
+![Screenshot 2024-07-31 204554](https://github.com/user-attachments/assets/981aa138-1226-4a34-8333-0bd8e5557281)
+
+![Screenshot 2024-07-31 204843](https://github.com/user-attachments/assets/b4220d0d-9155-4c75-aeec-63d9132b360c)
+
+![Screenshot 2024-07-31 205042](https://github.com/user-attachments/assets/5236fd5c-c9bf-4e11-b62b-1f90c6cdeb44)
+
 The dig output indicates that the DNS server running on localhost successfully resolved the domain main.abc.local to the IP address 192.168.1.10, but it issued a warning because .local is reserved for mDNS. The query was handled correctly with an authoritative answer and the response took 4 milliseconds.
 
 The dig output indicates that the DNS server running on localhost successfully resolved google.com to the IP address 142.251.32.78. The query was handled correctly with an authoritative answer, and the response took 1 millisecond. The result shows that your local DNS server is capable of resolving external domain names as well, as it is properly configured to forward queries or perform DNS resolution.
@@ -476,17 +485,15 @@ network:
    nslookup branch.abc.local 
    nslookup client.abc.local
    ```
+   ![Screenshot 2024-07-31 210605](https://github.com/user-attachments/assets/e5710539-c2e5-4eba-9bcb-3fecb917639d)
 
    - **External DNS Resolution:**
 
      ```bash
      nslookup google.com
      ```
+    ![Screenshot 2024-07-31 200307](https://github.com/user-attachments/assets/fd0fb5d1-8bf5-40fc-9f7f-e0ec510d7cb5)
 
-nano /etc/hosts
-192.168.1.10   main.abcb.com
-192.168.5.10   branch.abcb.com
-192.168.5.15   client.abcb.com
 
 2. **Test External DNS Resolution**
 
@@ -1044,6 +1051,7 @@ chronyc activity
 chronyc serverstats
 chronyc sources -v
 ```
+![Screenshot 2024-07-31 210845](https://github.com/user-attachments/assets/a5424a75-ad98-450a-9dfd-d096720c97e7)
 
 
 ## To set up Snort to monitor for suspicious activity on your servers, follow these steps:
@@ -1056,6 +1064,7 @@ chronyc sources -v
 sudo apt update
 sudo apt install snort
 ```
+![Screenshot 2024-07-31 115810](https://github.com/user-attachments/assets/e500df3c-cfb7-4458-8c5a-437a4cd9c108)
 
 ### 2. Configure Snort
 
@@ -1142,7 +1151,9 @@ snort -A console -c /etc/snort/snort.conf -i eth1 &
 
 Replace `<network-interface>` with your network interface, for example, `ens33`.
 
-OR 
+- Sample output of result
+  ![Screenshot 2024-07-31 133333](https://github.com/user-attachments/assets/910e76a8-54aa-41bd-a924-316943fc3556)
+
 
 ### 7. Automate Snort Startup
 
@@ -1203,6 +1214,7 @@ systemctl enable snort33.service
 systemctl start snort33.service
 systemctl status snort33.service
 ```
+![Screenshot 2024-07-31 140533](https://github.com/user-attachments/assets/9cdbabb8-2c1d-4799-a003-8e95832c8632)
 
 ### 8. Monitor Snort Logs
 
@@ -1211,8 +1223,9 @@ Snort logs its alerts to `/var/log/snort/snort.alert.fast` by default. You can m
 ```bash
 tail -f /var/log/snort/snort.alert.fast
 ```
+![Screenshot 2024-07-31 140757](https://github.com/user-attachments/assets/34a388b7-fc6b-4026-b9e9-a2d21c456464)
 
-By following these steps, Snort will monitor your network traffic for suspicious activity and log alerts based on the rules defined. I can optionally adjust and expand the rules and configuration to match the specific requirements and threats relevant to your environment.
+By following these steps, Snort will monitor your network traffic for suspicious activity and log alerts based on the rules defined. You can optionally adjust and expand the rules and configuration to match the specific requirements and threats relevant to your environment.
 
 ## COnfigure NMAP:
 To use `nmap` for network scanning and to ensure that all expected services are running and accessible, follow these steps:
@@ -1240,6 +1253,8 @@ nmap -sn 192.168.5.0/24
 ```
 
 This will perform a "ping scan" to determine which hosts are online.
+![Screenshot 2024-07-31 155530](https://github.com/user-attachments/assets/bb5c9cb4-3735-46c8-9f30-7ea6f76e25d6)
+
 
 ### 3. **Service Detection**
 
@@ -1259,10 +1274,13 @@ To scan for open ports on a specific host:
 nmap -p- 192.168.5.10
 ```
 This scans all 65535 ports. You can specify a range of ports:
+![Screenshot 2024-07-31 161358](https://github.com/user-attachments/assets/5a27ea6e-c51a-49bb-920b-a2090e0ff340)
 
+This scans for port 22 and port 80 on the server
 ```bash
 nmap -p 22,80,443 192.168.1.10
 ```
+![Screenshot 2024-07-31 161907](https://github.com/user-attachments/assets/e080a6c0-853a-4130-9054-7c01f794d978)
 
 ### 5. **Aggressive Scan**
 
@@ -1289,6 +1307,7 @@ To scan multiple hosts or subnets, list them in the command:
 ```bash
 sudo nmap -p 80,22 192.168.5.10 192.168.5.15 192.168.1.10
 ```
+![Screenshot 2024-07-31 162143](https://github.com/user-attachments/assets/d153cbfd-6e2d-4d17-8195-0a63399fc20b)
 
 ### 8. **Output Formats**
 
@@ -1335,6 +1354,7 @@ You need to capture traffic on the interfaces involved in the VPN connection. Fo
 ```bash
 sudo tcpdump -i tun0 -w vpn_traffic.pcap
 ```
+![Screenshot 2024-07-31 172143](https://github.com/user-attachments/assets/ad109b60-2f4a-4fe6-985c-9c953124f21f)
 
 - `-i tun0`: Specifies the interface to capture traffic on (replace `tun0` with your own actual VPN interface).
 - `-w vpn_traffic.pcap`: Writes the captured packets to a file named `vpn_traffic.pcap`.
@@ -1379,6 +1399,8 @@ Wireshark is available for Windows, macOS, and Linux. You can download it from t
    ```wireshark
    ip.addr == 10.0.0.1 && ip.addr == 10.0.0.2
    ```
+   ![Screenshot 2024-07-31 181912](https://github.com/user-attachments/assets/7b803bbc-94ab-4003-a7e8-526cf9580fd8)
+
 2. **Inspect VPN Traffic**: Look at the traffic on the `tun0` interface (or your VPN interface) to ensure packets are being transmitted and received correctly.
 3. **Check for Anomalies**: Look for retransmissions, malformed packets, or any other unusual activity.
 
@@ -1858,6 +1880,7 @@ Initialize Vagrant in the directory:
 ```sh
 vagrant init
 ```
+![Screenshot 2024-07-31 210845](https://github.com/user-attachments/assets/73654d6e-0ec5-4ba9-9609-01ac52e71d37)
 
 This will create a `Vagrantfile` in the directory. You will modify the `Vagrantfile`s to contain the resource creation for the 3 VMs.
 Check for latest OS version at https://app.vagrantup.com/generic
@@ -2136,10 +2159,26 @@ This provisioner will set up BIND9 for both the main and branch servers, configu
 ```
 vagrant up 
 ```
+![Screenshot 2024-08-01 154008](https://github.com/user-attachments/assets/8ede35a6-3fc9-40bf-9cfc-1b8db29ab240)
 
 #### 6. Verify the VMs
 
-Use vmware workstation to discover and launch the VM
+```
+vagrant status
+```
+![Screenshot 2024-08-01 194413](https://github.com/user-attachments/assets/c93926c7-f9a8-4002-9f78-acae092b6325)
+
+#### Use vmware workstation to discover and manage the running VMs
+- Open vmware workstation, click on `File`, then select option `scan for virtual machines`
+- Browse for the installation location of the created VMs, follow the instructions on screen and launch it.
+  ![Screenshot 2024-08-01 194521](https://github.com/user-attachments/assets/3c6ff113-1174-4a2c-8bf5-0ba05e5c1844)
+  ![Screenshot 2024-08-01 194538](https://github.com/user-attachments/assets/2d8d149c-2882-4405-9a31-ad04d11ae56d)
+
+#### Verify the VMs on the vmware workstation
+   ![Screenshot 2024-08-01 195604](https://github.com/user-attachments/assets/3adaff73-3711-4de8-9bdb-eab95b583c10)
+   ![Screenshot 2024-08-01 200203](https://github.com/user-attachments/assets/706c419b-3b11-46a7-8297-97be7f4c53b0)
+
+
 
 ```bash
 vagrant halt
