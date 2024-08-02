@@ -110,8 +110,6 @@ Create three VMs using VMware Workstation and a predefined VMDK disk (located at
      ```bash
      sudo nmcli con delete netplan-ens33
      sudo nmcli con delete 'Wired connection 1'
-     sudo nmcli con delete MainOfficeNet
-     sudo nmcli con delete VPNNet
      ```
 
    - **Add New Connections:**
@@ -119,33 +117,25 @@ Create three VMs using VMware Workstation and a predefined VMDK disk (located at
      ```bash
      # Add MainOfficeNet to ens33
      sudo nmcli con add type ethernet ifname ens33 con-name MainOfficeNet ip4 192.168.1.10/24
-     sudo nmcli con modify MainOfficeNet connection.autoconnect yes
-
-     # Add VPN Network to ens34
-     sudo nmcli con add type ethernet ifname ens34 con-name VPNNet ip4 10.0.0.10/24
-     sudo nmcli con modify VPNNet connection.autoconnect yes
      ```
 
 2. **Apply and Bring Up Connections**
 
-   - **Bring Up the Connections:**
+   - **Bring Up the Connection:**
 
      ```bash
      sudo nmcli con up MainOfficeNet
-     sudo nmcli con up VPNNet
      ```
 
 3. **Verify Configuration**
 
-   Verify the configuration to ensure they are set to autoconnect across reboots:
+   Verify the configuration:
 
    ```bash
    nmcli con show
    nmcli con show --active
    ip addr show
    ```
-
-   You should see the connections with the `autoconnect` flag set to `yes`.
 
 4. **Restart NetworkManager**
 
@@ -158,26 +148,17 @@ Create three VMs using VMware Workstation and a predefined VMDK disk (located at
 ### Configuration for Branch Office Server
 
 1. **Configure Network Interfaces:**
-
    - **Delete Existing Connections:**
 
      ```bash
      sudo nmcli con delete netplan-ens33
      sudo nmcli con delete 'Wired connection 1'
-     sudo nmcli con delete BranchOfficeNet
-     sudo nmcli con delete VPNNet
      ```
 
    - **Add New Connections:**
-
      ```bash
      # Add BranchOfficeNet to ens33
      sudo nmcli con add type ethernet ifname ens33 con-name BranchOfficeNet ip4 192.168.5.10/24
-     sudo nmcli con modify BranchOfficeNet connection.autoconnect yes
-
-     # Add VPN Network to ens34
-     sudo nmcli con add type ethernet ifname ens34 con-name VPNNet ip4 10.0.0.20/24
-     sudo nmcli con modify VPNNet connection.autoconnect yes
      ```
 
 2. **Bring Up the Connections:**
@@ -193,7 +174,6 @@ Create three VMs using VMware Workstation and a predefined VMDK disk (located at
 
    ```bash
    sudo nmcli con delete 'Wired connection 1'
-   sudo nmcli con delete BranchOfficeNet
    ```
 
 2. **Add DHCP Configuration:**
@@ -214,31 +194,18 @@ Create three VMs using VMware Workstation and a predefined VMDK disk (located at
 
   ```bash
   nmcli device show ens33
-  nmcli device show ens34
+  ip addr
   ```
-
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-- **Ping Tests:**
-  - From the Main Office Server, ping the Branch Office Server:
-    ```bash
-    ping 192.168.5.10
-    ```
-
-  - From the Branch Office Server, ping the Main Office Server:
-    ```bash
-    ping 192.168.1.10
-	ssh user@192.168.5.x
-    ```
 
   - From the Client VM, ensure it gets an IP address via DHCP and check connectivity:
     ```bash
     nmcli device show ens33
 	ip route
+    	ip addr
     ```
 
-===================================================================================================
-Setting up DNS with BIND9 involves configuring both the main and branch servers to handle local domain resolution and forward external queries appropriately. Below are the detailed steps for setting this up.
+## Setting Up DNS:
+#### Setting up DNS with BIND9 involves configuring both the main and branch servers to handle local domain resolution and forward external queries appropriately. Below are the detailed steps for setting this up.
 
 ### Main Server (main.abc.local)
 
