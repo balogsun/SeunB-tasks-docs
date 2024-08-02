@@ -772,6 +772,8 @@ By following these steps, you should have a working DNS setup where the branch o
        option domain-name-servers 192.168.5.10, 8.8.8.8;  # DNS servers
    }
    ```
+   <img width="393" alt="image" src="https://github.com/user-attachments/assets/1e7c8a46-a9fd-45d4-8a26-9bd635fe66fe">
+
 
 3. **Specify Network Interface for DHCP:**
 
@@ -780,6 +782,8 @@ By following these steps, you should have a working DNS setup where the branch o
    ```plaintext
    INTERFACESv4="ens33"
    ```
+   <img width="461" alt="image" src="https://github.com/user-attachments/assets/6ccc9839-cd44-4a8f-8822-5f2b5dbac84d">
+
 
    Replace `ens33` with the name of the network interface connected to your local network.
 
@@ -792,6 +796,8 @@ By following these steps, you should have a working DNS setup where the branch o
    systemctl status isc-dhcp-server
    systemctl enable isc-dhcp-server
    ```
+   <img width="794" alt="image" src="https://github.com/user-attachments/assets/8cb58945-3212-49af-86b4-dc654bc7dce6">
+
 
 ### On the Client Server
 
@@ -823,6 +829,8 @@ network:
           - 8.8.8.8
           - 8.8.4.4
    ```
+   <img width="471" alt="image" src="https://github.com/user-attachments/assets/e7db3368-538f-4bec-a27c-e7a688384c86">
+
 
 3. **Apply the Netplan configuration:**
 
@@ -830,7 +838,11 @@ network:
    sudo netplan apply
    ```
    
-   A new network will be created and will then need to be attached to ens33, then reboot so that it can pickup an IP. Or you can use below command to configure the network to be auto assigned an IP.
+   A new network will be created and will then need to be attached to ens33, then reboot so that it can pickup an IP. 
+   
+   <img width="457" alt="image" src="https://github.com/user-attachments/assets/a4e3a54d-2080-43b7-a702-26645464b13a">
+
+   Or you can use below command to configure the network to be auto assigned an IP.
 
 ```
 sudo nmcli con add type ethernet ifname ens33 con-name netplan-ens33 ipv4.method auto
@@ -845,6 +857,7 @@ sudo nmcli con up netplan-ens33
 nmcli device show ens33
 nmcli device status
 nmcli con show netplan-ens33
+<img width="485" alt="image" src="https://github.com/user-attachments/assets/69f9b76f-1144-4bcc-8688-5f0a654b0bec">
 
 
    Once the client server is powered up, it should automatically obtain an IP address from the branch server. Verify the IP address on the client:
@@ -852,6 +865,7 @@ nmcli con show netplan-ens33
    ```bash
    ip addr show ens33
    ```
+  <img width="491" alt="image" src="https://github.com/user-attachments/assets/00541645-1155-4158-94a2-af936ae733d5">
 
    You should see an IP address within the range specified in the DHCP server configuration (e.g., `192.168.5.15` to `192.168.5.100`).
 
@@ -883,6 +897,7 @@ Uncomment it (remove the `#`), so it reads:
 ```bash
 net.ipv4.ip_forward=1
 ```
+<img width="432" alt="image" src="https://github.com/user-attachments/assets/4a594cad-a109-4185-9052-101ad5f7ed31">
 
 Apply the changes:
 
@@ -927,6 +942,7 @@ Check that the NAT rule is in place:
 ```bash
 sudo iptables -t nat -L -v
 ```
+<img width="460" alt="image" src="https://github.com/user-attachments/assets/450594f4-2f5f-443b-bd9e-ba906e2d5e74">
 
 ## 4. Configure the Client System
 
@@ -961,6 +977,7 @@ Test the internet connectivity from the client system by pinging an external web
 ```bash
 ping google.com
 ```
+<img width="490" alt="image" src="https://github.com/user-attachments/assets/642af69c-2c60-43f6-9caa-183d34984655">
 
 ### NTP setup
 
@@ -988,6 +1005,8 @@ Add the following lines to allow the client server to get time from the branch s
 ```plaintext
 allow 192.168.5.0/24
 ```
+<img width="488" alt="image" src="https://github.com/user-attachments/assets/ab09288e-da96-4b4f-b705-bde21a59552f">
+
 
 This `allow` directive permits the specified network to access the time service. Adjust the network range if necessary.
 
@@ -1000,6 +1019,7 @@ sudo iptables -A OUTPUT -p udp --sport 123 -j ACCEPT
 sudo iptables-save | sudo tee /etc/iptables/rules.v4
 sudo iptables -L -v -n
 ```
+<img width="391" alt="image" src="https://github.com/user-attachments/assets/67caa738-f5a2-4aa5-afe6-2000a1e6e24d">
 
 3. **Start Chrony:**
 
@@ -1013,6 +1033,7 @@ sudo systemctl enable chrony
 ```bash
 sudo systemctl status chrony
 ```
+<img width="742" alt="image" src="https://github.com/user-attachments/assets/5be38ae5-d320-4c4c-a0fc-2b72a5b88b3e">
 
 ### On the Client Server
 
@@ -1031,17 +1052,18 @@ Edit the Chrony configuration file:
 sudo nano /etc/chrony/chrony.conf
 ```
 
-Add the branch server's IP address as the NTP server:
+Add the branch server's IP address as the NTP server, remove all other default ntp sources by hashing it out:
 
 ```plaintext
 server 192.168.5.10 iburst #Branch server IP address
 ```
+<img width="485" alt="image" src="https://github.com/user-attachments/assets/7071e35a-dbe9-4ab1-8efb-1d72f5fb87e0">
+
 
 3. **Start Chrony:**
 
 ```bash
 sudo systemctl start chrony
-sudo systemctl enable chrony
 ```
 
 4. **Verify Chrony Status:**
@@ -1049,6 +1071,7 @@ sudo systemctl enable chrony
 ```bash
 sudo systemctl status chrony
 ```
+<img width="733" alt="image" src="https://github.com/user-attachments/assets/65539723-bba3-4104-8c15-b55671632f59">
 
 ### Verification
 
@@ -1063,6 +1086,8 @@ To ensure that the client server is correctly synchronizing its time from the br
 ```bash
 chronyc sources
 ```
+<img width="485" alt="image" src="https://github.com/user-attachments/assets/e9b4cb70-fe49-4c73-94b4-ffeb9b473a45">
+
 
 You should see the branch server (`192.168.5.10` or its `hostname`) listed as a source.
 
@@ -1075,7 +1100,7 @@ chronyc activity
 chronyc serverstats
 chronyc sources -v
 ```
-![Screenshot 2024-07-31 210845](https://github.com/user-attachments/assets/a5424a75-ad98-450a-9dfd-d096720c97e7)
+<img width="404" alt="image" src="https://github.com/user-attachments/assets/055d9655-7c74-49a8-b005-23c0dcddf9ff">
 
 
 ## To set up Snort to monitor for suspicious activity on your servers, follow these steps:
@@ -1151,6 +1176,7 @@ alert udp any any -> any 53 (msg:"UDP Traffic to DNS port 53 detected"; sid:1000
 # Alert on any TCP traffic to port 22 (SSH)
 alert tcp any any -> any 22 (msg:"TCP Traffic to SSH port 22 detected"; sid:1000005; rev:1;)
 ```
+<img width="490" alt="image" src="https://github.com/user-attachments/assets/08a72e17-34ae-4434-8a39-1804d485a4ef">
 
 ### 5. Test Snort Configuration
 
@@ -1159,6 +1185,7 @@ Test the configuration to ensure there are no syntax errors:
 ```bash
 sudo snort -T -c /etc/snort/snort.conf
 ```
+<img width="364" alt="image" src="https://github.com/user-attachments/assets/64031522-e3be-4946-bb63-09ec9579a8bc">
 
 ### 6. Run Snort
 
